@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -226,7 +227,7 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
       <section class="panel" data-step="2" aria-labelledby="experience-title" hidden>
         <div class="step-label"><span class="step-number">2</span> Experiences</div>
         <h2 id="experience-title">Build your teaching and related experience sections</h2>
-        <p class="section-copy">Put Teaching Experience first when you have it. Keep the rest broad: Related Experience, Leadership, Campus Involvement, Volunteer Experience, or Other Work.</p>
+        <p class="section-copy">Put Teaching Experience first when you have it. Keep the rest broad: Related Experience, Leadership, Campus Involvement, Volunteer Experience, or Other Work. Non-teaching experience can stay when it adds relevant transferable skills, responsibility, or evidence.</p>
 
         <div class="recent-wrap" id="recentExperienceWrap" hidden>
           <div class="recent-label">Add from recent brainstorm work</div>
@@ -250,7 +251,7 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
       <section class="panel" data-step="3" aria-labelledby="prep-title" hidden>
         <div class="step-label"><span class="step-number">3</span> Professional Prep</div>
         <h2 id="prep-title">Add professional development and certifications</h2>
-        <p class="section-copy">This step is optional. Use it for preparation outside your degree record—certifications, credentials, workshops, conferences, district or school training, curriculum training, classroom management training, literacy/math training, or other relevant professional learning.</p>
+        <p class="section-copy">This step is optional. Use it for preparation outside your degree record—certifications, credentials, Baker Teacher Leader Center workshops/events/professional learning, conferences, district or school training, curriculum training, classroom management training, literacy/math training, or other relevant professional learning.</p>
         <div class="bullet-help"><strong>Keep this separate from experience.</strong> A CPR certification or literacy workshop is professional preparation; student teaching, tutoring, coaching, or work with youth belongs in an experience section.</div>
         <div id="prepEditor"></div>
         <div class="actions"><button class="btn" id="addPrep" type="button">+ Add Professional Development or Certification</button></div>
@@ -481,11 +482,11 @@ function renderExperiences(){
         </div>
         <div class="bullet-zone">
           <div class="bullet-zone-title"><strong>Resume bullets</strong><span class="hint">Add only the bullets you want on this version of your resume.</span></div>
-          <div class="bullet-purpose"><strong>Turn duties into teaching evidence.</strong> Use: <strong>educator power verb + what you did + student learning/classroom purpose + result or evidence when relevant.</strong> <span class="hint">Example: Used formative checks for understanding to regroup students for targeted small-group reading instruction</span></div>
+          <div class="bullet-purpose"><strong>Show skills and contributions—not just duties.</strong> Use: <strong>power verb + what you did + one useful detail about who/scope, how, or why/result.</strong> <span class="hint">Teaching example: Used formative checks for understanding to regroup students for targeted small-group reading instruction. Non-teaching experience can show transferable skills too.</span></div>
           ${bulletHandoffHtml(e)}
           <div class="bullet-list">${(e.bullets||['']).map((b,i)=>`<div class="bullet-row"><textarea data-bullet="${i}" aria-label="Bullet ${i+1} for ${attr(e.title||'this experience')}" placeholder="Start with an action verb and describe what you did">${escapeHtml(cleanBullet(b))}</textarea><button class="btn small" type="button" data-delete-bullet="${i}" aria-label="Remove bullet ${i+1}">Remove</button></div>`).join('')}</div>
           <div class="actions"><button class="btn small soft" type="button" data-add-bullet="${attr(e.id)}">+ Add Bullet</button></div>
-          <div class="bullet-help"><strong>Stuck on the wording?</strong> Use the <em>Teaching Resume Bullet Builder</em>. If you keep a bullet there and browser storage is available, it can appear here as an optional suggestion.</div>
+          <div class="bullet-help"><strong>Stuck on the wording?</strong> Use the <em>Build a Strong Resume Bullet</em>. If you keep a bullet there and browser storage is available, it can appear here as an optional suggestion.</div>
         </div>
       </div>
     </article>`;
@@ -565,7 +566,7 @@ function defaultPrep(){return {id:uid(),type:'Certification',name:'',provider:''
 function renderPrep(){
   const root=$('prepEditor');if(!root)return;data.prep=Array.isArray(data.prep)?data.prep:[];
   if(!data.prep.length){root.innerHTML='<p class="recent-note">Nothing added yet. You can skip this step.</p>';renderPreview();return}
-  root.innerHTML=data.prep.map((x,i)=>`<article class="exp-card" data-prep-id="${attr(x.id)}"><div class="exp-head"><div><strong>${escapeHtml(x.name||`Professional preparation ${i+1}`)}</strong><span class="sub">${escapeHtml(x.type)}</span></div><button class="btn small danger" type="button" data-remove-prep="${attr(x.id)}">Remove</button></div><div class="exp-body"><div class="form-grid"><div class="field"><label>Type</label><select data-prep-field="type"><option${x.type==='Certification'?' selected':''}>Certification</option><option${x.type==='Professional Development'?' selected':''}>Professional Development</option></select></div><div class="field"><label>Name</label><input data-prep-field="name" value="${attr(x.name)}" placeholder="CPR / First Aid or Literacy Workshop"></div><div class="field"><label>Provider / organization <span class="hint">(optional)</span></label><input data-prep-field="provider" value="${attr(x.provider)}" placeholder="American Red Cross or school district"></div><div class="field"><label>Date <span class="hint">(optional)</span></label><input data-prep-field="date" value="${attr(x.date)}" placeholder="August 20XX"></div></div></div></article>`).join('');
+  root.innerHTML=data.prep.map((x,i)=>`<article class="exp-card" data-prep-id="${attr(x.id)}"><div class="exp-head"><div><strong>${escapeHtml(x.name||`Professional preparation ${i+1}`)}</strong><span class="sub">${escapeHtml(x.type)}</span></div><button class="btn small danger" type="button" data-remove-prep="${attr(x.id)}">Remove</button></div><div class="exp-body"><div class="form-grid"><div class="field"><label>Type</label><select data-prep-field="type"><option${x.type==='Certification'?' selected':''}>Certification</option><option${x.type==='Professional Development'?' selected':''}>Professional Development</option></select></div><div class="field"><label>Name</label><input data-prep-field="name" value="${attr(x.name)}" placeholder="CPR / First Aid, Baker Teacher Leader Center workshop, or Literacy Workshop"></div><div class="field"><label>Provider / organization <span class="hint">(optional)</span></label><input data-prep-field="provider" value="${attr(x.provider)}" placeholder="Baker Teacher Leader Center, American Red Cross, or school district"></div><div class="field"><label>Date <span class="hint">(optional)</span></label><input data-prep-field="date" value="${attr(x.date)}" placeholder="August 20XX"></div></div></div></article>`).join('');
 }
 $('addPrep').addEventListener('click',()=>{data.prep=Array.isArray(data.prep)?data.prep:[];data.prep.push(defaultPrep());save();renderPrep();document.querySelector('[data-prep-id]:last-of-type')?.scrollIntoView({behavior:'smooth',block:'center'})});
 $('prepEditor').addEventListener('input',e=>{const card=e.target.closest('[data-prep-id]');if(!card||!e.target.dataset.prepField)return;const x=data.prep.find(p=>String(p.id)===String(card.dataset.prepId));if(!x)return;x[e.target.dataset.prepField]=e.target.value;save();renderPreview()});
