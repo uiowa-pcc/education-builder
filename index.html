@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -116,7 +115,7 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
 [hidden]{display:none!important}
 
 /* Paged builder */
-.wizard-progress{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.wizard-progress{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
 .wizard-step{position:relative;border:1.5px solid #CFCFCF;background:#fff;border-radius:12px;padding:9px 10px;text-align:left;font-weight:700;cursor:pointer;min-height:58px}
 .wizard-step span{display:block;font-size:.76rem;color:var(--cool-gray);font-weight:500;margin-top:2px}
 .wizard-step[aria-current="step"]{border-color:#000;box-shadow:inset 0 -4px 0 var(--iowa-gold)}
@@ -135,6 +134,17 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
 .experience-error-note.show{display:block}
 .bullet-purpose{background:#F5F5F5;border-left:4px solid #000;border-radius:0 10px 10px 0;padding:10px 12px;margin:8px 0 10px;font-size:.86rem}
 .bullet-purpose > strong:first-child{display:block;margin-bottom:2px}
+.bullet-accordion{display:grid;gap:9px}
+.bullet-card{overflow:hidden}
+.bullet-toggle{width:100%;display:flex;justify-content:space-between;gap:12px;align-items:center;text-align:left;background:#fff;border:0;padding:14px 15px;cursor:pointer;color:#111}
+.bullet-toggle:hover{background:#FAFAFA}
+.bullet-toggle:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
+.bullet-toggle-main{min-width:0}
+.bullet-toggle-title{display:block;font-weight:700}
+.bullet-toggle-meta{display:block;font-size:.82rem;color:var(--cool-gray);margin-top:2px}
+.bullet-toggle-state{font-weight:700;font-size:.82rem;white-space:nowrap}
+.bullet-card.is-open{border-color:#111;box-shadow:inset 0 4px 0 var(--iowa-gold)}
+.bullet-card .exp-body{border-top:1px solid #E1E1E1}
 /* Resume preview */
 .resume-preview{font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.3;color:#111;background:#fff;border:1px solid #E2E2E2;padding:18px;min-height:470px}
 .p-name{text-align:center;font-size:17px;font-weight:700;letter-spacing:.01em}
@@ -170,10 +180,11 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
     <div>
       <nav class="wizard-progress" aria-label="Resume builder steps">
         <button class="wizard-step" type="button" data-go-step="1" aria-current="step">1 · Basics<span>Contact, education & licensure</span></button>
-        <button class="wizard-step" type="button" data-go-step="2">2 · Experiences<span>Teaching first</span></button>
-        <button class="wizard-step" type="button" data-go-step="3">3 · Professional Prep<span>Optional development & certifications</span></button>
-        <button class="wizard-step" type="button" data-go-step="4">4 · Skills<span>Technical & languages</span></button>
-        <button class="wizard-step" type="button" data-go-step="5">5 · Finish<span>Create working draft</span></button>
+        <button class="wizard-step" type="button" data-go-step="2">2 · Experience Details<span>Set up every experience</span></button>
+        <button class="wizard-step" type="button" data-go-step="3">3 · Bullets<span>One experience at a time</span></button>
+        <button class="wizard-step" type="button" data-go-step="4">4 · Professional Prep<span>Development & certifications</span></button>
+        <button class="wizard-step" type="button" data-go-step="5">5 · Skills<span>Technical & languages</span></button>
+        <button class="wizard-step" type="button" data-go-step="6">6 · Finish<span>Create working draft</span></button>
       </nav>
       <div class="validation-summary" id="validationSummary" role="alert"></div>
       <section class="panel" data-step="1" aria-labelledby="basics-title">
@@ -204,6 +215,7 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
           <summary>Add optional education details</summary>
           <div class="form-grid" style="margin-top:11px">
             <div class="field"><label for="minor">Minor</label><input id="minor" type="text" placeholder="Spanish"></div>
+            <div class="field"><label for="endorsements">Endorsement(s)</label><input id="endorsements" type="text" placeholder="Example: Reading K–8; English Language Arts 5–12"><span class="hint">Include endorsements connected to your degree or teacher preparation program here.</span></div>
             <div class="field"><label for="certificates">Degree-related certificate(s)</label><input id="certificates" type="text" placeholder="Example: Multicultural Education"><span class="hint">Use this only for certificates connected to your academic record. Add professional certifications on the Professional Prep step.</span></div>
             <div class="field"><label for="deansList">Dean’s List</label><input id="deansList" type="text" placeholder="Fall 2026 – Spring 2028, Spring 2029"><span class="hint">Enter the terms exactly as you want them to appear.</span></div>
             <div class="field"><label for="gpa">GPA</label><input id="gpa" type="text" inputmode="decimal" placeholder="3.62"><span class="hint">Consider including it when it is 3.0 or above. /4.0 is added automatically.</span></div>
@@ -216,18 +228,16 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
           <div id="licensureFields" hidden>
             <div class="form-grid">
               <div class="field"><label for="licenseName">Anticipated license</label><input id="licenseName" type="text" placeholder="Iowa Initial Teaching License"></div>
-              <div class="field"><label for="endorsements">Endorsement(s)</label><input id="endorsements" type="text" placeholder="K–6 Elementary Classroom; Reading K–8"></div>
               <div class="field"><label for="licenseDate">Anticipated licensure</label><input id="licenseDate" type="text" placeholder="May 20XX"></div>
-              <div class="field"><label for="folderNumber">Folder number <span class="hint">(if applicable)</span></label><input id="folderNumber" type="text" placeholder="Optional"></div>
             </div>
           </div>
         </div>
       </section>
 
       <section class="panel" data-step="2" aria-labelledby="experience-title" hidden>
-        <div class="step-label"><span class="step-number">2</span> Experiences</div>
-        <h2 id="experience-title">Build your teaching and related experience sections</h2>
-        <p class="section-copy">Put Teaching Experience first when you have it. Keep the rest broad: Related Experience, Leadership, Campus Involvement, Volunteer Experience, or Other Work. Non-teaching experience can stay when it adds relevant transferable skills, responsibility, or evidence.</p>
+        <div class="step-label"><span class="step-number">2</span> Experience Details</div>
+        <h2 id="experience-title">Set up your experiences</h2>
+        <p class="section-copy">Add the basic details for every experience you may include. Put Teaching Experience first when you have it, but keep non-teaching experiences when they show relevant transferable skills, responsibility, leadership, service, or subject-area expertise.</p>
 
         <div class="recent-wrap" id="recentExperienceWrap" hidden>
           <div class="recent-label">Add from recent brainstorm work</div>
@@ -248,8 +258,16 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
         </div>
       </section>
 
-      <section class="panel" data-step="3" aria-labelledby="prep-title" hidden>
-        <div class="step-label"><span class="step-number">3</span> Professional Prep</div>
+      <section class="panel" data-step="3" aria-labelledby="bullets-title" hidden>
+        <div class="step-label"><span class="step-number">3</span> Bullets</div>
+        <h2 id="bullets-title">Add bullets to your experiences</h2>
+        <p class="section-copy">Work on one experience at a time. All of your experiences stay visible below, but only one opens at a time so you can focus on the strongest evidence for that experience.</p>
+        <div class="bullet-purpose"><strong>Use the same formula throughout the suite.</strong> Power verb + what you did + <strong>one</strong> useful detail about who/scope, how, or why/result. Teaching and non-teaching experiences can both demonstrate strong transferable skills.</div>
+        <div id="bulletEditor"></div>
+      </section>
+
+      <section class="panel" data-step="4" aria-labelledby="prep-title" hidden>
+        <div class="step-label"><span class="step-number">4</span> Professional Prep</div>
         <h2 id="prep-title">Add professional development and certifications</h2>
         <p class="section-copy">This step is optional. Use it for preparation outside your degree record—certifications, credentials, Baker Teacher Leader Center workshops/events/professional learning, conferences, district or school training, curriculum training, classroom management training, literacy/math training, or other relevant professional learning.</p>
         <div class="bullet-help"><strong>Keep this separate from experience.</strong> A CPR certification or literacy workshop is professional preparation; student teaching, tutoring, coaching, or work with youth belongs in an experience section.</div>
@@ -257,8 +275,8 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
         <div class="actions"><button class="btn" id="addPrep" type="button">+ Add Professional Development or Certification</button></div>
       </section>
 
-      <section class="panel" data-step="4" aria-labelledby="skills-title" hidden>
-        <div class="step-label"><span class="step-number">4</span> Skills</div>
+      <section class="panel" data-step="5" aria-labelledby="skills-title" hidden>
+        <div class="step-label"><span class="step-number">5</span> Skills</div>
         <h2 id="skills-title">Add technical or specialty skills</h2>
         <p class="section-copy">This step is optional. Include only specific technical, content-area, equipment, software, or language skills that add something meaningful for the role—not communication, teamwork, classroom management, differentiation, or other strengths that should be demonstrated through experience bullets.</p>
         <div class="skills-example"><strong>Examples</strong>Art Education: ceramics, printmaking, kiln operation, Adobe Photoshop<br>Music Education: piano, guitar, audio recording/editing software<br>Other areas: lab equipment, fabrication tools, assistive technology, specialized software, or relevant languages</div>
@@ -275,8 +293,8 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
         </details>
       </section>
 
-      <section class="panel finish-box" data-step="5" aria-labelledby="finish-title" hidden>
-        <div class="step-label"><span class="step-number">5</span> Finish</div>
+      <section class="panel finish-box" data-step="6" aria-labelledby="finish-title" hidden>
+        <div class="step-label"><span class="step-number">6</span> Finish</div>
         <h2 id="finish-title">Create your editable teaching resume</h2>
         <p class="finish-note"><strong>This creates a working draft.</strong> For education candidates, one or two focused pages can be appropriate. Review the draft for relevance, keep Teaching Experience prominent, and tailor your strongest evidence to the school and position.</p>
         <div class="mobile-save-note"><strong>On a phone or tablet:</strong> after creating the file, use <strong>Share / Save</strong> to save it to Files, open it in Word, or send it to yourself.</div>
@@ -292,7 +310,7 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
       </section>
       <div class="wizard-nav" aria-label="Move between resume builder steps">
         <button class="btn" id="prevStep" type="button">← Back</button>
-        <div class="wizard-position" id="wizardPosition" aria-live="polite">Step 1 of 5</div>
+        <div class="wizard-position" id="wizardPosition" aria-live="polite">Step 1 of 6</div>
         <button class="btn primary" id="nextStep" type="button">Next →</button>
       </div>
     </div>
@@ -325,16 +343,17 @@ let bulletBank=[];
 let lastDownloadUrl='';
 let lastDownloadFile=null;
 let currentStep=1;
+let activeBulletId=null;
 
 function showStep(step,{focus=false}={}){
-  currentStep=Math.max(1,Math.min(5,Number(step)||1));
+  currentStep=Math.max(1,Math.min(6,Number(step)||1));
   document.querySelectorAll('[data-step]').forEach(panel=>{panel.hidden=Number(panel.dataset.step)!==currentStep});
   document.querySelectorAll('[data-go-step]').forEach(btn=>{
     if(Number(btn.dataset.goStep)===currentStep)btn.setAttribute('aria-current','step');else btn.removeAttribute('aria-current');
   });
   $('prevStep').disabled=currentStep===1;
-  $('nextStep').hidden=currentStep===5;
-  $('wizardPosition').textContent=`Step ${currentStep} of 5`;
+  $('nextStep').hidden=currentStep===6;
+  $('wizardPosition').textContent=`Step ${currentStep} of 6`;
   if(focus){const panel=document.querySelector(`[data-step="${currentStep}"]`);panel?.querySelector('h2')?.focus?.();panel?.scrollIntoView({behavior:'smooth',block:'start'});}
 }
 function clearValidationMarks(){
@@ -394,13 +413,13 @@ function load(){
   }else{
     data={version:1,fields:{},experiences:[defaultExp()],sectionOrder:[],prep:[]};
   }
-  recentExperiences=safeArray(EXPERIENCE_BANK_KEY).filter(x=>x&&(x.experienceName||x.title)).map(x=>({experienceName:x.experienceName||x.title,context:x.context||x.org||'',section:normalizeSection(x.section||''),startMonth:x.startMonth||'',startYear:x.startYear||'',endMonth:x.endMonth||'',endYear:x.endYear||'',current:!!x.current})).slice().reverse().slice(0,8);
+  recentExperiences=safeArray(EXPERIENCE_BANK_KEY).filter(x=>x&&(x.experienceName||x.title)).map(x=>({experienceName:x.experienceName||x.title,context:x.context||x.org||'',section:normalizeSection(x.section||''),startMonth:x.startMonth||'',startYear:x.startYear||'',endMonth:x.endMonth||'',endYear:x.endYear||'',current:!!x.current})).slice().reverse();
   bulletBank=safeArray(BULLET_BANK_KEY).filter(x=>x&&x.experienceName&&x.bullet);
   $('storageNote').textContent=storageOK?'Recent work can be remembered on this device when browser storage is available. Download your resume before leaving so you have a copy you control.':'Local browser saving is not available here. The builder still works, but download your resume before leaving this page.';
 }
 function save(){
   if(data.fields&&'streetAddress' in data.fields)delete data.fields.streetAddress;
-  const ids=['name','email','phone','linkedin','city','state','school','schoolLocation','degree','otherDegree','major','gradMonth','gradYear','minor','certificates','deansList','gpa','licensureReady','licenseName','endorsements','licenseDate','folderNumber','programmingLanguages','operatingSystems','software','spokenLanguages'];
+  const ids=['name','email','phone','linkedin','city','state','school','schoolLocation','degree','otherDegree','major','gradMonth','gradYear','minor','certificates','deansList','gpa','licensureReady','licenseName','endorsements','licenseDate','programmingLanguages','operatingSystems','software','spokenLanguages'];
   ids.forEach(id=>{if($(id))data.fields[id]=$(id).value});
   syncSectionOrder();
   if(storageOK)safeSet(BUILDER_KEY,data);
@@ -450,7 +469,7 @@ function renderRecentExperiences(){
 function addRecentExperience(exp){
   const exists=data.experiences.some(e=>normalize(e.title)===normalize(exp.experienceName)&&normalize(e.org)===normalize(exp.context||''));
   if(exists){document.querySelector(`[data-title-key="${CSS.escape(normalize(exp.experienceName))}"]`)?.scrollIntoView({behavior:'smooth',block:'center'});return;}
-  const added=defaultExp(exp.experienceName||'',exp.context||'');added.section=exp.section||'';added.startMonth=exp.startMonth||'';added.startYear=exp.startYear||'';added.endMonth=exp.endMonth||'';added.endYear=exp.endYear||'';added.current=!!exp.current;data.experiences.push(added);save();renderExperiences();renderSectionOrder();renderPreview();
+  const added=defaultExp(exp.experienceName||'',exp.context||'');added.section=exp.section||'';added.startMonth=exp.startMonth||'';added.startYear=exp.startYear||'';added.endMonth=exp.endMonth||'';added.endYear=exp.endYear||'';added.current=!!exp.current;data.experiences.push(added);if(!activeBulletId)activeBulletId=added.id;save();renderExperiences();renderBulletExperiences();renderSectionOrder();renderPreview();
   document.querySelector('.exp-card:last-of-type')?.scrollIntoView({behavior:'smooth',block:'center'});
 }
 function matchingBullets(e){
@@ -480,17 +499,36 @@ function renderExperiences(){
           <div class="field"><label>Location</label><div class="form-grid"><input type="text" aria-label="City" data-field="expCity" value="${attr(e.expCity)}" placeholder="Iowa City"><input type="text" aria-label="State abbreviation" data-field="expState" value="${attr(e.expState)}" placeholder="IA" maxlength="2"></div></div>
           <div class="field"><label>Dates</label><div class="date-grid"><div><span class="hint">Start</span><div class="date-pair"><select aria-label="Start month" data-field="startMonth">${monthOptions(e.startMonth)}</select><select aria-label="Start year" data-field="startYear">${yearOptions(e.startYear)}</select></div></div><div><span class="hint">End</span><div class="date-pair"><select aria-label="End month" data-field="endMonth" ${e.current?'disabled':''}>${monthOptions(e.endMonth)}</select><select aria-label="End year" data-field="endYear" ${e.current?'disabled':''}>${yearOptions(e.endYear)}</select></div><label class="check-label"><input type="checkbox" data-field="current" ${e.current?'checked':''}> I currently do this</label></div></div></div>
         </div>
-        <div class="bullet-zone">
-          <div class="bullet-zone-title"><strong>Resume bullets</strong><span class="hint">Add only the bullets you want on this version of your resume.</span></div>
-          <div class="bullet-purpose"><strong>Show skills and contributions—not just duties.</strong> Use: <strong>power verb + what you did + one useful detail about who/scope, how, or why/result.</strong> <span class="hint">Teaching example: Used formative checks for understanding to regroup students for targeted small-group reading instruction. Non-teaching experience can show transferable skills too.</span></div>
-          ${bulletHandoffHtml(e)}
-          <div class="bullet-list">${(e.bullets||['']).map((b,i)=>`<div class="bullet-row"><textarea data-bullet="${i}" aria-label="Bullet ${i+1} for ${attr(e.title||'this experience')}" placeholder="Start with an action verb and describe what you did">${escapeHtml(cleanBullet(b))}</textarea><button class="btn small" type="button" data-delete-bullet="${i}" aria-label="Remove bullet ${i+1}">Remove</button></div>`).join('')}</div>
-          <div class="actions"><button class="btn small soft" type="button" data-add-bullet="${attr(e.id)}">+ Add Bullet</button></div>
-          <div class="bullet-help"><strong>Stuck on the wording?</strong> Use the <em>Build a Strong Resume Bullet</em>. If you keep a bullet there and browser storage is available, it can appear here as an optional suggestion.</div>
-        </div>
       </div>
     </article>`;
   }).join('');
+}
+
+function renderBulletExperiences(){
+  const root=$('bulletEditor'); if(!root)return;
+  const usable=data.experiences.filter(e=>e.title||e.org);
+  if(!usable.length){root.innerHTML='<div class="recent-note">Add your experience details on the previous step first.</div>';activeBulletId=null;return;}
+  if(!activeBulletId || !usable.some(e=>String(e.id)===String(activeBulletId))) activeBulletId=usable[0].id;
+  root.innerHTML=`<div class="bullet-accordion">${usable.map((e,idx)=>{
+    const open=String(e.id)===String(activeBulletId);
+    const bulletCount=(e.bullets||[]).map(cleanBullet).filter(Boolean).length;
+    return `<article class="exp-card bullet-card${open?' is-open':''}" data-bullet-id="${attr(e.id)}">
+      <button class="bullet-toggle" type="button" data-toggle-bullet="${attr(e.id)}" aria-expanded="${open}">
+        <span class="bullet-toggle-main"><span class="bullet-toggle-title">${escapeHtml(e.title||`Experience ${idx+1}`)}</span><span class="bullet-toggle-meta">${escapeHtml([e.section,e.org].filter(Boolean).join(' · '))}</span></span>
+        <span class="bullet-toggle-state">${open?'Collapse':bulletCount?`${bulletCount} bullet${bulletCount===1?'':'s'}`:'Add bullets'}</span>
+      </button>
+      <div class="exp-body" ${open?'':'hidden'}>
+        <div class="bullet-zone">
+          <div class="bullet-zone-title"><strong>Resume bullets</strong><span class="hint">Add only the bullets you want on this version of your resume.</span></div>
+          <div class="bullet-purpose"><strong>Show skills and contributions—not just duties.</strong> Use: <strong>power verb + what you did + one useful detail about who/scope, how, or why/result.</strong> <span class="hint">Teaching and non-teaching experiences can both show transferable skills.</span></div>
+          ${bulletHandoffHtml(e)}
+          <div class="bullet-list">${(e.bullets||['']).map((b,i)=>`<div class="bullet-row"><textarea data-bullet="${i}" aria-label="Bullet ${i+1} for ${attr(e.title||'this experience')}" placeholder="Start with an action verb and describe what you did">${escapeHtml(cleanBullet(b))}</textarea><button class="btn small" type="button" data-delete-bullet="${i}" aria-label="Remove bullet ${i+1}">Remove</button></div>`).join('')}</div>
+          <div class="actions"><button class="btn small soft" type="button" data-add-bullet="${attr(e.id)}">+ Add Bullet</button></div>
+          <div class="bullet-help"><strong>Need wording help?</strong> Use <em>Find Your Transferable Skills</em> to identify what this experience demonstrates, then use <em>Build a Strong Resume Bullet</em>. Saved bullets can appear here as optional suggestions.</div>
+        </div>
+      </div>
+    </article>`;
+  }).join('')}</div>`;
 }
 function syncSectionOrder(){
   const used=[];data.experiences.forEach(e=>{const s=String(e.section||'').trim();if(s&&!used.includes(s))used.push(s)});
@@ -515,14 +553,12 @@ function renderPreview(){
   if(linkedin)html+=`<div class="p-contact">${escapeHtml(linkedin)}</div>`;
   if(field('school')||degreeLine()){
     html+=`<div class="p-section">EDUCATION</div><div class="p-row"><span class="p-bold">${escapeHtml([field('school'),field('schoolLocation')].filter(Boolean).join(', '))}</span><span class="p-right">${gradLine()?`Anticipated ${escapeHtml(gradLine())}`:''}</span></div><div>${escapeHtml(degreeLine())}</div>`;
-    const extras=[];if(field('minor'))extras.push(`Minor: ${field('minor')}`);if(field('certificates'))extras.push(`Certificate${field('certificates').includes(';')?'s':''}: ${field('certificates').replace(/;/g,', ')}`);if(field('deansList'))extras.push(`Dean's List: ${field('deansList')}`);if(gpaLine())extras.push(`GPA: ${gpaLine()}`);
+    const extras=[];if(field('minor'))extras.push(`Minor: ${field('minor')}`);if(field('endorsements'))extras.push(`Endorsement${field('endorsements').includes(';')?'s':''}: ${field('endorsements').replace(/;/g,', ')}`);if(field('certificates'))extras.push(`Certificate${field('certificates').includes(';')?'s':''}: ${field('certificates').replace(/;/g,', ')}`);if(field('deansList'))extras.push(`Dean's List: ${field('deansList')}`);if(gpaLine())extras.push(`GPA: ${gpaLine()}`);
     if(extras.length)html+=`<ul class="p-edu-list">${extras.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>`;
   }
-  if(field('licensureReady')==='yes'&&(field('licenseName')||field('endorsements')||field('licenseDate')||field('folderNumber'))){
+  if(field('licensureReady')==='yes'&&(field('licenseName')||field('licenseDate'))){
     html+=`<div class="p-section">LICENSURE</div>`;
     if(field('licenseName'))html+=`<div class="p-row"><span class="p-bold">${escapeHtml(field('licenseName'))}</span><span class="p-right">${escapeHtml(field('licenseDate'))}</span></div>`;
-    if(field('endorsements'))html+=`<div>${escapeHtml(field('endorsements'))}</div>`;
-    if(field('folderNumber'))html+=`<div>Folder Number: ${escapeHtml(field('folderNumber'))}</div>`;
   }
   const groups=getGroups();orderedSections(groups).forEach(section=>{
     html+=`<div class="p-section">${escapeHtml(section)}</div>`;
@@ -535,27 +571,55 @@ function renderPreview(){
   $('preview').innerHTML=html;
 }
 
-$('addExperience').addEventListener('click',()=>{data.experiences.push(defaultExp());save();renderExperiences();renderSectionOrder();renderPreview();document.querySelector('.exp-card:last-of-type')?.scrollIntoView({behavior:'smooth',block:'center'})});
+$('addExperience').addEventListener('click',()=>{const added=defaultExp();data.experiences.push(added);if(!activeBulletId)activeBulletId=added.id;save();renderExperiences();renderBulletExperiences();renderSectionOrder();renderPreview();document.querySelector('.exp-card:last-of-type')?.scrollIntoView({behavior:'smooth',block:'center'})});
 $('experienceEditor').addEventListener('input',e=>{
   const card=e.target.closest('.exp-card');if(!card)return;const exp=data.experiences.find(x=>String(x.id)===String(card.dataset.id));if(!exp)return;e.target.removeAttribute('aria-invalid');e.target.closest('.field')?.classList.remove('field-error');
   if(e.target.dataset.field){const k=e.target.dataset.field;if(k==='expState')e.target.value=capState(e.target.value);if(!['sectionChoice','current'].includes(k))exp[k]=e.target.value}
-  if(e.target.dataset.bullet!==undefined)exp.bullets[Number(e.target.dataset.bullet)]=cleanBullet(e.target.value);
   save();renderSectionOrder();renderPreview();
 });
 $('experienceEditor').addEventListener('change',e=>{
   const card=e.target.closest('.exp-card');if(!card)return;const exp=data.experiences.find(x=>String(x.id)===String(card.dataset.id));if(!exp)return;e.target.removeAttribute('aria-invalid');e.target.closest('.field')?.classList.remove('field-error');
   if(e.target.dataset.field==='sectionChoice'){exp.section=e.target.value;}
-  if(e.target.dataset.field==='current'){exp.current=e.target.checked;if(exp.current){exp.endMonth='';exp.endYear=''}renderExperiences()}
+  if(e.target.dataset.field==='current'){exp.current=e.target.checked;if(exp.current){exp.endMonth='';exp.endYear=''}renderExperiences();renderBulletExperiences()}
   if(e.target.dataset.field&&!['sectionChoice','current'].includes(e.target.dataset.field)){const k=e.target.dataset.field;if(k==='expState')e.target.value=capState(e.target.value);exp[k]=e.target.value}
   save();renderSectionOrder();renderPreview();
 });
 $('experienceEditor').addEventListener('click',e=>{
-  const card=e.target.closest('.exp-card');const exp=card?data.experiences.find(x=>String(x.id)===String(card.dataset.id)):null;
-  if(e.target.dataset.remove){data.experiences=data.experiences.filter(x=>String(x.id)!==String(e.target.dataset.remove));save();renderExperiences();renderSectionOrder();renderPreview();return}
-  if(!exp)return;
-  if(e.target.dataset.addBullet){exp.bullets.push('');save();renderExperiences();return}
-  if(e.target.dataset.deleteBullet!==undefined){exp.bullets.splice(Number(e.target.dataset.deleteBullet),1);if(!exp.bullets.length)exp.bullets=[''];save();renderExperiences();renderPreview();return}
-  if(e.target.dataset.importBullet!==undefined){const key=e.target.dataset.importBullet;const item=bulletBank.find(b=>String(b.id||b.bullet)===String(key));if(item){const blank=exp.bullets.findIndex(b=>!String(b||'').trim());if(blank>=0)exp.bullets[blank]=cleanBullet(item.bullet);else exp.bullets.push(cleanBullet(item.bullet));save();renderExperiences();renderPreview()}return}
+  if(e.target.dataset.remove){
+    const removedId=e.target.dataset.remove;
+    data.experiences=data.experiences.filter(x=>String(x.id)!==String(removedId));
+    if(String(activeBulletId)===String(removedId))activeBulletId=data.experiences[0]?.id||null;
+    save();renderExperiences();renderBulletExperiences();renderSectionOrder();renderPreview();return;
+  }
+});
+
+$('bulletEditor').addEventListener('input',e=>{
+  const card=e.target.closest('[data-bullet-id]');if(!card)return;
+  const exp=data.experiences.find(x=>String(x.id)===String(card.dataset.bulletId));if(!exp)return;
+  if(e.target.dataset.bullet!==undefined)exp.bullets[Number(e.target.dataset.bullet)]=cleanBullet(e.target.value);
+  save();renderPreview();
+});
+$('bulletEditor').addEventListener('click',e=>{
+  const toggle=e.target.closest('[data-toggle-bullet]');
+  if(toggle){
+    activeBulletId=toggle.dataset.toggleBullet;
+    renderBulletExperiences();
+    return;
+  }
+  const card=e.target.closest('[data-bullet-id]');if(!card)return;
+  const exp=data.experiences.find(x=>String(x.id)===String(card.dataset.bulletId));if(!exp)return;
+  if(e.target.dataset.addBullet){exp.bullets.push('');save();renderBulletExperiences();return}
+  if(e.target.dataset.deleteBullet!==undefined){exp.bullets.splice(Number(e.target.dataset.deleteBullet),1);if(!exp.bullets.length)exp.bullets=[''];save();renderBulletExperiences();renderPreview();return}
+  if(e.target.dataset.importBullet!==undefined){
+    const key=e.target.dataset.importBullet;
+    const item=bulletBank.find(b=>String(b.id||b.bullet)===String(key));
+    if(item){
+      const blank=exp.bullets.findIndex(b=>!String(b||'').trim());
+      if(blank>=0)exp.bullets[blank]=cleanBullet(item.bullet);else exp.bullets.push(cleanBullet(item.bullet));
+      save();renderBulletExperiences();renderPreview();
+    }
+    return;
+  }
 });
 $('sectionOrderList').addEventListener('click',e=>{
   const up=e.target.closest('[data-order-up]'),down=e.target.closest('[data-order-down]');if(!up&&!down)return;syncSectionOrder();const btn=up||down;const i=Number(up?btn.dataset.orderUp:btn.dataset.orderDown);const j=up?i-1:i+1;if(j<0||j>=data.sectionOrder.length)return;[data.sectionOrder[i],data.sectionOrder[j]]=[data.sectionOrder[j],data.sectionOrder[i]];save();renderSectionOrder();renderPreview();
@@ -574,14 +638,14 @@ $('prepEditor').addEventListener('change',e=>{const card=e.target.closest('[data
 $('prepEditor').addEventListener('click',e=>{const b=e.target.closest('[data-remove-prep]');if(!b)return;data.prep=data.prep.filter(x=>String(x.id)!==String(b.dataset.removePrep));save();renderPrep();renderPreview()});
 
 function bindFields(){
-  const ids=['name','email','phone','linkedin','city','state','school','schoolLocation','degree','otherDegree','major','gradMonth','gradYear','minor','certificates','deansList','gpa','licensureReady','licenseName','endorsements','licenseDate','folderNumber','programmingLanguages','operatingSystems','software','spokenLanguages'];
+  const ids=['name','email','phone','linkedin','city','state','school','schoolLocation','degree','otherDegree','major','gradMonth','gradYear','minor','certificates','deansList','gpa','licensureReady','licenseName','endorsements','licenseDate','programmingLanguages','operatingSystems','software','spokenLanguages'];
   ids.forEach(id=>$(id).addEventListener('input',()=>{if(id==='state')$('state').value=capState($('state').value);$(id).removeAttribute('aria-invalid');$(id).closest('.field')?.classList.remove('field-error');save();renderPreview()}));
   $('degree').addEventListener('change',()=>{$('otherDegreeWrap').hidden=$('degree').value!=='Other';save();renderPreview()});
   $('licensureReady').addEventListener('change',()=>{$('licensureFields').hidden=$('licensureReady').value!=='yes';save();renderPreview()});
 }
 function validate(){
   clearValidationMarks();
-  const errors={1:[],2:[],3:[],4:[],5:[]};
+  const errors={1:[],2:[],3:[],4:[],5:[],6:[]};
   let firstStep=null,firstControl=null;
   const required=[['name','name'],['email','email'],['phone','phone'],['city','city'],['state','state'],['school','school'],['degree','degree'],['major','major'],['gradMonth','graduation month'],['gradYear','graduation year']];
   required.forEach(([id,label])=>{if(!field(id)){errors[1].push(label);markControlInvalid($(id));firstStep??=1;firstControl??=$(id)}});
@@ -601,7 +665,7 @@ function validate(){
   const badSteps=Object.keys(errors).filter(k=>errors[k].length).map(Number);
   badSteps.forEach(markStepError);
   if(badSteps.length){
-    const labels={1:'Basics',2:'Experiences',3:'Professional Prep',4:'Skills',5:'Finish'};
+    const labels={1:'Basics',2:'Experience Details',3:'Bullets',4:'Professional Prep',5:'Skills',6:'Finish'};
     const summary=badSteps.map(step=>`${labels[step]}: ${errors[step].join(', ')}`).join(' • ');
     $('validationSummary').textContent=`Finish the highlighted information before creating your Word resume. ${summary}`;
     $('validationSummary').classList.add('show');
@@ -631,12 +695,13 @@ function makeWordDocument(){
   children.push(blankLine());
   children.push(heading('Education'));
   children.push(rightLine([field('school'),field('schoolLocation')].filter(Boolean).join(', '),`Anticipated ${gradLine()}`,{leftBold:true}));
-  children.push(line([run(degreeLine())],0,!!(field('minor')||field('certificates')||field('deansList')||gpaLine())));
+  children.push(line([run(degreeLine())],0,!!(field('minor')||field('endorsements')||field('certificates')||field('deansList')||gpaLine())));
   if(field('minor'))children.push(bullet(`Minor: ${field('minor')}`));
+  if(field('endorsements'))children.push(bullet(`Endorsement${field('endorsements').includes(';')?'s':''}: ${field('endorsements').replace(/;/g,', ')}`));
   if(field('certificates'))children.push(bullet(`Certificate${field('certificates').includes(';')?'s':''}: ${field('certificates').replace(/;/g,', ')}`));
   if(field('deansList'))children.push(bullet(`Dean's List: ${field('deansList')}`));
   if(gpaLine())children.push(bullet(`GPA: ${gpaLine()}`));
-  if(field('licensureReady')==='yes'&&(field('licenseName')||field('endorsements')||field('licenseDate')||field('folderNumber'))){children.push(blankLine());children.push(heading('Licensure'));if(field('licenseName'))children.push(rightLine(field('licenseName'),field('licenseDate'),{leftBold:true}));if(field('endorsements'))children.push(line([run(field('endorsements'))]));if(field('folderNumber'))children.push(line([run(`Folder Number: ${field('folderNumber')}`)]));}
+  if(field('licensureReady')==='yes'&&(field('licenseName')||field('licenseDate'))){children.push(blankLine());children.push(heading('Licensure'));if(field('licenseName'))children.push(rightLine(field('licenseName'),field('licenseDate'),{leftBold:true}));}
   const groups=getGroups();orderedSections(groups).forEach(section=>{
     children.push(blankLine());
     children.push(heading(section));
@@ -659,14 +724,14 @@ $('downloadResume').addEventListener('click',async()=>{
 $('shareResume').addEventListener('click',async()=>{if(!lastDownloadFile)return;try{await navigator.share({files:[lastDownloadFile],title:'Resume'});$('downloadStatus').textContent='Resume shared or saved.'}catch(err){if(err?.name!=='AbortError')$('downloadStatus').textContent='Share was not available. Use Download .docx instead.'}});
 
 window.addEventListener('focus',()=>{
-  const latestExperiences=safeArray(EXPERIENCE_BANK_KEY).filter(x=>x&&(x.experienceName||x.title)).map(x=>({experienceName:x.experienceName||x.title,context:x.context||x.org||'',section:normalizeSection(x.section||''),startMonth:x.startMonth||'',startYear:x.startYear||'',endMonth:x.endMonth||'',endYear:x.endYear||'',current:!!x.current})).slice().reverse().slice(0,8);
+  const latestExperiences=safeArray(EXPERIENCE_BANK_KEY).filter(x=>x&&(x.experienceName||x.title)).map(x=>({experienceName:x.experienceName||x.title,context:x.context||x.org||'',section:normalizeSection(x.section||''),startMonth:x.startMonth||'',startYear:x.startYear||'',endMonth:x.endMonth||'',endYear:x.endYear||'',current:!!x.current})).slice().reverse();
   const latestBullets=safeArray(BULLET_BANK_KEY).filter(x=>x&&x.experienceName&&x.bullet);
   const changed=JSON.stringify(latestExperiences)!==JSON.stringify(recentExperiences)||JSON.stringify(latestBullets)!==JSON.stringify(bulletBank);
   recentExperiences=latestExperiences;bulletBank=latestBullets;
-  if(changed){renderRecentExperiences();renderExperiences();renderPreview();}
+  if(changed){renderRecentExperiences();renderExperiences();renderBulletExperiences();renderPreview();}
 });
 
-fillGrad();load();restore();renderRecentExperiences();renderExperiences();renderSectionOrder();renderPrep();bindFields();renderPreview();save();showStep(1);
+fillGrad();load();restore();activeBulletId=data.experiences.find(e=>e.title||e.org)?.id||data.experiences[0]?.id||null;renderRecentExperiences();renderExperiences();renderBulletExperiences();renderSectionOrder();renderPrep();bindFields();renderPreview();save();showStep(1);
 })();
 </script>
 </body>
