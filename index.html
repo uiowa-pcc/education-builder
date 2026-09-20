@@ -127,7 +127,7 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
 [hidden]{display:none!important}
 
 /* Paged builder */
-.wizard-progress{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.wizard-progress{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:0 0 16px}
 .wizard-step{position:relative;border:1.5px solid #CFCFCF;background:#fff;border-radius:12px;padding:9px 10px;text-align:left;font-weight:700;cursor:pointer;min-height:58px}
 .wizard-step span{display:block;font-size:.76rem;color:var(--cool-gray);font-weight:500;margin-top:2px}
 .wizard-step[aria-current="step"]{border-color:#000;box-shadow:inset 0 -4px 0 var(--iowa-gold)}
@@ -188,9 +188,7 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
     <div class="notice"><strong>For teaching roles, make your teaching preparation easy to find.</strong> Teaching Experience stays at the top when you use it. Other sections can move based on what best supports your candidacy.</div>
   </section>
 
-  <div class="workspace">
-    <div>
-      <nav class="wizard-progress" aria-label="Resume builder steps">
+  <nav class="wizard-progress" aria-label="Resume builder steps">
         <button class="wizard-step" type="button" data-go-step="1" aria-current="step">1 · Basics<span>Contact, education & licensure</span></button>
         <button class="wizard-step" type="button" data-go-step="2">2 · Experience Details<span>Set up every experience</span></button>
         <button class="wizard-step" type="button" data-go-step="3">3 · Bullets<span>One experience at a time</span></button>
@@ -198,6 +196,9 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
         <button class="wizard-step" type="button" data-go-step="5">5 · Skills<span>Technical & languages</span></button>
         <button class="wizard-step" type="button" data-go-step="6">6 · Finish<span>Create working draft</span></button>
       </nav>
+
+  <div class="workspace">
+    <div>
       <div class="validation-summary" id="validationSummary" role="alert"></div>
       <section class="panel" data-step="1" aria-labelledby="basics-title">
         <div class="step-label"><span class="step-number">1</span> Basics</div>
@@ -725,6 +726,10 @@ $('addPdChoice').addEventListener('click',()=>{const value=$('pdChoice').value;i
   $(id).addEventListener('click',e=>{const card=e.target.closest('[data-prep-id]');if(!card)return;const x=data.prep.find(p=>String(p.id)===String(card.dataset.prepId));if(!x)return;const remove=e.target.closest('[data-remove-prep]');if(remove){data.prep=data.prep.filter(p=>String(p.id)!==String(remove.dataset.removePrep));save();renderPrep();return}if(e.target.closest('[data-add-prep-bullet]')){x.bullets=x.bullets||[''];x.bullets.push('');save();renderPrep();return}const rb=e.target.closest('[data-remove-prep-bullet]');if(rb){x.bullets.splice(Number(rb.dataset.removePrepBullet),1);if(!x.bullets.length)x.bullets=[''];save();renderPrep();}});
 });
 $('shareResume').addEventListener('click',async()=>{if(!lastDownloadFile)return;try{await navigator.share({files:[lastDownloadFile],title:'Resume'});$('downloadStatus').textContent='Resume shared or saved.'}catch(err){if(err?.name!=='AbortError')$('downloadStatus').textContent='Share was not available. Use Download .docx instead.'}});
+
+$('prevStep').addEventListener('click',()=>showStep(currentStep-1,{focus:true}));
+$('nextStep').addEventListener('click',()=>showStep(currentStep+1,{focus:true}));
+document.querySelectorAll('[data-go-step]').forEach(btn=>btn.addEventListener('click',()=>showStep(Number(btn.dataset.goStep),{focus:true})));
 
 window.addEventListener('focus',()=>{
   const latestExperiences=safeArray(EXPERIENCE_BANK_KEY).filter(x=>x&&(x.experienceName||x.title)).map(x=>({id:x.id||'',experienceName:x.experienceName||x.title,context:x.context||x.org||'',section:normalizeSection(x.section||''),dateMode:x.dateMode||'month',startMonth:x.startMonth||'',startTerm:x.startTerm||'',startYear:x.startYear||'',endMonth:x.endMonth||'',endTerm:x.endTerm||'',endYear:x.endYear||'',current:!!x.current,district:x.district||'',gradeSubject:x.gradeSubject||'',sourceCategory:x.sourceCategory||''})).slice().reverse();
