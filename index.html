@@ -44,7 +44,7 @@ p{margin:0 0 12px}
 .meta{font-size:.9rem;color:var(--cool-gray);margin:0}
 .notice{margin-top:18px;padding:13px 15px;border-left:5px solid var(--iowa-gold);background:var(--soft-gold);border-radius:0 11px 11px 0}
 .notice strong{display:block;margin-bottom:2px}
-.workspace{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(330px,.72fr);gap:18px;align-items:start}
+.workspace{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(390px,.95fr);gap:20px;align-items:start}
 .preview-wrap{position:sticky;top:12px}
 .preview-card{padding:20px}
 .preview-card h2{font-size:1.3rem;margin-bottom:4px}
@@ -112,6 +112,18 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
 .mobile-save-note{display:none;background:var(--soft-gold);border-left:4px solid var(--iowa-gold);padding:10px 11px;margin:10px 0;border-radius:0 9px 9px 0;font-size:.86rem}
 .resource-link{font-size:.86rem;margin-top:14px}
 .next-step{margin-top:14px;padding:12px 14px;background:var(--soft);border-radius:11px;font-size:.88rem}
+
+.add-experience-chooser{margin:12px 0 4px;padding:14px;background:var(--soft);border:1px solid #D9D9D9;border-radius:12px}
+.add-experience-chooser .chooser-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:end}
+.add-experience-chooser label{display:block;margin-bottom:5px}
+.date-mode{margin-bottom:8px}
+.prep-columns{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
+.prep-section{border:1px solid #D8D8D8;border-radius:13px;padding:13px;background:#FAFAFA}
+.prep-section h3{margin-bottom:3px}
+.prep-pick{margin:10px 0;padding:10px;background:#fff;border:1px solid #DDD;border-radius:9px}
+.prep-bullets{margin-top:10px}
+@media(max-width:800px){.add-experience-chooser .chooser-row,.prep-columns{grid-template-columns:1fr}.add-experience-chooser .btn{width:100%}}
+
 [hidden]{display:none!important}
 
 /* Paged builder */
@@ -239,17 +251,20 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
         <h2 id="experience-title">Set up your experiences</h2>
         <p class="section-copy">Add the basic details for every experience you may include. Put Teaching Experience first when you have it, but keep non-teaching experiences when they show relevant transferable skills, responsibility, leadership, service, or subject-area expertise.</p>
 
-        <div class="recent-wrap" id="recentExperienceWrap" hidden>
-          <div class="recent-label">Add from recent brainstorm work</div>
-          <div class="recent-list" id="recentExperienceList" aria-label="Recent brainstormed experiences"></div>
-          <p class="recent-note">These appear only when recent work is available on this device. Choosing one adds its name and context; you still decide how it belongs on this resume.</p>
-        </div>
-
-        <div class="bullet-help"><strong>Need to remember more possibilities?</strong> Use <em>Brainstorm Your Experiences</em>, then return here. Professional development and certifications are added on the next step—not as experiences.</div>
+        <div class="bullet-help"><strong>Add only what you may use on this resume.</strong> When you click <em>Add an Experience</em>, you can choose from experiences you already brainstormed or enter something different.</div>
         <div class="experience-error-note" id="experienceErrorNote">Add at least one complete experience before creating your Word resume.</div>
 
         <div id="experienceEditor"></div>
         <div class="actions"><button class="btn" id="addExperience" type="button">+ Add an Experience</button></div>
+        <div class="add-experience-chooser" id="experienceAddPanel" hidden>
+          <label for="experienceChoice">Choose an experience to add</label>
+          <div class="chooser-row">
+            <select id="experienceChoice"></select>
+            <button class="btn primary" id="confirmAddExperience" type="button">Add</button>
+            <button class="btn soft" id="cancelAddExperience" type="button">Cancel</button>
+          </div>
+          <p class="recent-note" id="experienceChoiceNote">Only experiences not already on this resume appear here.</p>
+        </div>
 
         <div class="section-order" id="sectionOrderWrap" hidden>
           <h3>Change your section order</h3>
@@ -267,12 +282,28 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
       </section>
 
       <section class="panel" data-step="4" aria-labelledby="prep-title" hidden>
-        <div class="step-label"><span class="step-number">4</span> Professional Prep</div>
+        <div class="step-label"><span class="step-number">4</span> Professional Preparation</div>
         <h2 id="prep-title">Add professional development and certifications</h2>
-        <p class="section-copy">This step is optional. Use it for preparation outside your degree record—certifications, credentials, Baker Teacher Leader Center workshops/events/professional learning, conferences, district or school training, curriculum training, classroom management training, literacy/math training, or other relevant professional learning.</p>
-        <div class="bullet-help"><strong>Keep this separate from experience.</strong> A CPR certification or literacy workshop is professional preparation; student teaching, tutoring, coaching, or work with youth belongs in an experience section.</div>
-        <div id="prepEditor"></div>
-        <div class="actions"><button class="btn" id="addPrep" type="button">+ Add Professional Development or Certification</button></div>
+        <p class="section-copy">Keep these separate from your experience sections. Add only items that support your teaching preparation or qualifications.</p>
+        <div class="prep-columns">
+          <section class="prep-section" aria-labelledby="pd-title">
+            <h3 id="pd-title">Professional Development</h3>
+            <p class="hint">Workshops, conferences, district or school training, curriculum training, Baker Teacher Leader Center opportunities, and other professional learning.</p>
+            <div class="prep-pick" id="pdPickWrap">
+              <label for="pdChoice">Add from experiences you already brainstormed</label>
+              <select id="pdChoice"></select>
+              <div class="actions"><button class="btn small" id="addPdChoice" type="button">Add selected</button></div>
+            </div>
+            <div id="pdEditor"></div>
+            <div class="actions"><button class="btn" id="addPd" type="button">+ Add Professional Development</button></div>
+          </section>
+          <section class="prep-section" aria-labelledby="cert-title">
+            <h3 id="cert-title">Certifications</h3>
+            <p class="hint">Credentials such as CPR / First Aid, substitute authorization, technology certifications, or other relevant certifications.</p>
+            <div id="certEditor"></div>
+            <div class="actions"><button class="btn" id="addCert" type="button">+ Add Certification</button></div>
+          </section>
+        </div>
       </section>
 
       <section class="panel" data-step="5" aria-labelledby="skills-title" hidden>
@@ -334,6 +365,7 @@ const OLD_BUILDER_KEY='__none__';
 const EXPERIENCE_BANK_KEY='uiowaEducationExperienceBank_v1';
 const BULLET_BANK_KEY='uiowaEducationBulletBank_v1';
 const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const terms=['Fall','Spring','Summer'];
 const sectionPresets=['Teaching Experience','Related Experience','Leadership','Campus Involvement','Volunteer Experience','Other Work'];
 const $=id=>document.getElementById(id);
 let storageOK=false;
@@ -384,9 +416,30 @@ function field(id){return $(id)?.value?.trim?.()||''}
 function safeArray(key){try{const v=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(v)?v:[]}catch(_){return[]}}
 function testStorage(){try{const k='__uiowa_resume_test__';localStorage.setItem(k,'1');localStorage.removeItem(k);return true}catch(_){return false}}
 function safeSet(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch(_){return false}}
+function upsertSharedExperienceFromBuilder(exp,bank){
+  if(!exp||(!String(exp.title||'').trim()&&!String(exp.org||'').trim()))return null;
+  const name=String(exp.title||'').trim();if(!name)return null;
+  const context=String(exp.org||'').trim();
+  const nameKey=normalize(name),contextKey=normalize(context);
+  let index=-1;
+  if(exp.sharedExperienceId)index=bank.findIndex(x=>x&&String(x.id||'')===String(exp.sharedExperienceId));
+  if(index<0)index=bank.findIndex(x=>x&&normalize(x.experienceName||x.title||x.role||x.name)===nameKey&&(contextKey?normalize(x.context||x.org||x.organization||x.school||x.setting)===contextKey:true));
+  const existing=index>=0&&bank[index]&&typeof bank[index]==='object'?bank[index]:{};
+  const sharedId=existing.id||exp.sharedExperienceId||uid();
+  exp.sharedExperienceId=sharedId;
+  const merged={...existing,id:sharedId,experienceName:name,context:context||existing.context||'',section:exp.section||existing.section||'',dateMode:exp.dateMode||existing.dateMode||'month',startMonth:exp.startMonth||existing.startMonth||'',startTerm:exp.startTerm||existing.startTerm||'',startYear:exp.startYear||existing.startYear||'',endMonth:exp.endMonth||existing.endMonth||'',endTerm:exp.endTerm||existing.endTerm||'',endYear:exp.endYear||existing.endYear||'',current:!!exp.current,district:exp.district||existing.district||'',gradeSubject:exp.gradeSubject||existing.gradeSubject||'',updatedAt:new Date().toISOString()};
+  if(index>=0)bank[index]=merged;else bank.push(merged);
+  return merged;
+}
+function syncSharedExperienceBank(){
+  if(!storageOK)return;
+  let bank=safeArray(EXPERIENCE_BANK_KEY);
+  data.experiences.forEach(exp=>upsertSharedExperienceFromBuilder(exp,bank));
+  safeSet(EXPERIENCE_BANK_KEY,bank.slice(-100));
+}
 
 function defaultExp(title='',org=''){
-  return {id:uid(),title,org,section:'',customSection:'',district:'',gradeSubject:'',expCity:'',expState:'',startMonth:'',startYear:'',endMonth:'',endYear:'',current:false,bullets:['']};
+  return {id:uid(),sharedExperienceId:'',title,org,section:'',customSection:'',district:'',gradeSubject:'',expCity:'',expState:'',dateMode:'month',startMonth:'',startTerm:'',startYear:'',endMonth:'',endTerm:'',endYear:'',current:false,bullets:['']};
 }
 function normalizeSection(v=''){
   const map={
@@ -397,6 +450,10 @@ function normalizeSection(v=''){
     'Additional Experience':'Other Work'
   };
   return map[v]||v;
+}
+function looksLikeProfessionalPrep(item={}){
+  const text=`${item.experienceName||item.title||''} ${item.context||item.org||''}`.toLowerCase();
+  return item.sourceCategory==='growth'&&/(workshop|training|conference|certif|credential|professional learning|teacher leader center|first aid|cpr|authorization|seminar|institute)/.test(text);
 }
 function migrateExp(e={}){
   return {...defaultExp(),...e,id:e.id||uid(),section:normalizeSection(e.section||''),expState:capState(e.expState||''),bullets:(Array.isArray(e.bullets)&&e.bullets.length?e.bullets:['']).map(cleanBullet)};
@@ -409,11 +466,12 @@ function load(){
     if(!saved){try{saved=JSON.parse(localStorage.getItem(OLD_BUILDER_KEY)||'null')}catch(_){saved=null}}
   }
   if(saved&&Array.isArray(saved.experiences)){
-    data={version:1,fields:saved.fields||{},experiences:saved.experiences.map(migrateExp),sectionOrder:Array.isArray(saved.sectionOrder)?saved.sectionOrder:[],prep:Array.isArray(saved.prep)?saved.prep:[]};
+    data={version:1,fields:saved.fields||{},experiences:saved.experiences.map(migrateExp).filter(e=>e.title||e.org||e.section||e.sharedExperienceId||(e.bullets||[]).some(Boolean)),sectionOrder:Array.isArray(saved.sectionOrder)?saved.sectionOrder:[],prep:Array.isArray(saved.prep)?saved.prep:[]};
   }else{
-    data={version:1,fields:{},experiences:[defaultExp()],sectionOrder:[],prep:[]};
+    data={version:1,fields:{},experiences:[],sectionOrder:[],prep:[]};
   }
-  recentExperiences=safeArray(EXPERIENCE_BANK_KEY).filter(x=>x&&(x.experienceName||x.title)).map(x=>({experienceName:x.experienceName||x.title,context:x.context||x.org||'',section:normalizeSection(x.section||''),startMonth:x.startMonth||'',startYear:x.startYear||'',endMonth:x.endMonth||'',endYear:x.endYear||'',current:!!x.current})).slice().reverse();
+  recentExperiences=safeArray(EXPERIENCE_BANK_KEY).filter(x=>x&&(x.experienceName||x.title)).map(x=>({id:x.id||'',experienceName:x.experienceName||x.title,context:x.context||x.org||'',section:normalizeSection(x.section||''),dateMode:x.dateMode||'month',startMonth:x.startMonth||'',startTerm:x.startTerm||'',startYear:x.startYear||'',endMonth:x.endMonth||'',endTerm:x.endTerm||'',endYear:x.endYear||'',current:!!x.current,district:x.district||'',gradeSubject:x.gradeSubject||'',sourceCategory:x.sourceCategory||''})).slice().reverse();
+  data.prep=(Array.isArray(data.prep)?data.prep:[]).map(x=>({...defaultPrep(x.type==='Certification'?'Certification':'Professional Development'),...x,type:x.type==='Certification'?'Certification':'Professional Development',bullets:Array.isArray(x.bullets)&&x.bullets.length?x.bullets:['']}));
   bulletBank=safeArray(BULLET_BANK_KEY).filter(x=>x&&x.experienceName&&x.bullet);
   $('storageNote').textContent=storageOK?'Recent work can be remembered on this device when browser storage is available. Download your resume before leaving so you have a copy you control.':'Local browser saving is not available here. The builder still works, but download your resume before leaving this page.';
 }
@@ -422,7 +480,7 @@ function save(){
   const ids=['name','email','phone','linkedin','city','state','school','schoolLocation','degree','otherDegree','major','gradMonth','gradYear','minor','certificates','deansList','gpa','licensureReady','licenseName','endorsements','licenseDate','programmingLanguages','operatingSystems','software','spokenLanguages'];
   ids.forEach(id=>{if($(id))data.fields[id]=$(id).value});
   syncSectionOrder();
-  if(storageOK)safeSet(BUILDER_KEY,data);
+  if(storageOK){syncSharedExperienceBank();safeSet(BUILDER_KEY,data);}
 }
 function fillGrad(){
   const now=new Date().getFullYear();
@@ -442,35 +500,45 @@ function yearOptions(selected=''){
   for(let y=now+8;y>=now-15;y--)h+=`<option${String(selected)===String(y)?' selected':''}>${y}</option>`;
   return h;
 }
+function termOptions(selected=''){return '<option value="">Semester</option>'+terms.map(t=>`<option${String(selected)===t?' selected':''}>${t}</option>`).join('')}
+function refreshRecentExperiences(){recentExperiences=safeArray(EXPERIENCE_BANK_KEY).filter(x=>x&&(x.experienceName||x.title)).map(x=>({id:x.id||'',experienceName:x.experienceName||x.title,context:x.context||x.org||'',section:normalizeSection(x.section||''),dateMode:x.dateMode||'month',startMonth:x.startMonth||'',startTerm:x.startTerm||'',startYear:x.startYear||'',endMonth:x.endMonth||'',endTerm:x.endTerm||'',endYear:x.endYear||'',current:!!x.current,district:x.district||'',gradeSubject:x.gradeSubject||'',sourceCategory:x.sourceCategory||''})).slice().reverse()}
+
 function sectionOptions(selected=''){
   return '<option value="">Choose a resume section</option>'+sectionPresets.map(s=>`<option${s===selected?' selected':''}>${s}</option>`).join('');
 }
 function dateLabel(e){
-  const sm=months[Number(e.startMonth)-1]||'';const start=[sm,e.startYear].filter(Boolean).join(' ');
-  let end='';if(e.current)end='Present';else{const em=months[Number(e.endMonth)-1]||'';end=[em,e.endYear].filter(Boolean).join(' ')}
+  const semester=e.dateMode==='semester';
+  const start=semester?[e.startTerm,e.startYear].filter(Boolean).join(' '):[months[Number(e.startMonth)-1]||'',e.startYear].filter(Boolean).join(' ');
+  let end='';
+  if(e.current)end='Present';
+  else end=semester?[e.endTerm,e.endYear].filter(Boolean).join(' '):[months[Number(e.endMonth)-1]||'',e.endYear].filter(Boolean).join(' ');
   return start&&end?`${start}–${end}`:start||end;
 }
-function endKey(e){return e.current?999999:Number(`${e.endYear||'0'}${String(e.endMonth||'0').padStart(2,'0')}`)}
+function endKey(e){const termRank={Spring:4,Summer:7,Fall:10};if(e.current)return 999999;if(e.dateMode==='semester')return Number(`${e.endYear||'0'}${String(termRank[e.endTerm]||0).padStart(2,'0')}`);return Number(`${e.endYear||'0'}${String(e.endMonth||'0').padStart(2,'0')}`)}
 function expLoc(e){return [e.expCity,capState(e.expState)].filter(Boolean).join(', ')}
 function cityStateLine(){return [field('city'),capState(field('state'))].filter(Boolean).join(', ')}
 function degreeLine(){const d=field('degree')==='Other'?field('otherDegree'):field('degree');const m=field('major');return [d,m].filter(Boolean).join(' ')}
 function gradLine(){return [field('gradMonth'),field('gradYear')].filter(Boolean).join(' ')}
 function gpaLine(){const g=field('gpa').replace(/\/4\.0$/,'').trim();return g?`${g}/4.0`:''}
 
-function renderRecentExperiences(){
-  const wrap=$('recentExperienceWrap'),list=$('recentExperienceList');list.innerHTML='';
-  wrap.hidden=!recentExperiences.length;
-  recentExperiences.forEach(exp=>{
-    const btn=document.createElement('button');btn.type='button';btn.className='recent-btn';
-    btn.innerHTML=`${escapeHtml(exp.experienceName)}${exp.context?`<span class="recent-context">${escapeHtml(exp.context)}</span>`:''}`;
-    btn.addEventListener('click',()=>addRecentExperience(exp));list.appendChild(btn);
-  });
+function unaddedRecentExperiences(){
+  refreshRecentExperiences();
+  return recentExperiences.filter(exp=>!looksLikeProfessionalPrep(exp)&&!data.experiences.some(e=>(exp.id&&String(e.sharedExperienceId||'')===String(exp.id))||(normalize(e.title)===normalize(exp.experienceName)&&normalize(e.org)===normalize(exp.context||''))));
+}
+function renderExperienceAddChoices(){
+  const select=$('experienceChoice');if(!select)return;
+  const available=unaddedRecentExperiences();
+  select.innerHTML=available.map(exp=>`<option value="${attr(exp.id||`${exp.experienceName}|${exp.context}`)}">${escapeHtml(exp.experienceName)}${exp.context?` — ${escapeHtml(exp.context)}`:''}</option>`).join('')+`<option value="__new__">Add a different experience</option>`;
+  $('experienceChoiceNote').textContent=available.length?`${available.length} saved experience${available.length===1?'':'s'} available. Experiences already on this resume are hidden.`:'All saved experiences are already on this resume. Choose “Add a different experience” to enter something new.';
 }
 function addRecentExperience(exp){
-  const exists=data.experiences.some(e=>normalize(e.title)===normalize(exp.experienceName)&&normalize(e.org)===normalize(exp.context||''));
-  if(exists){document.querySelector(`[data-title-key="${CSS.escape(normalize(exp.experienceName))}"]`)?.scrollIntoView({behavior:'smooth',block:'center'});return;}
-  const added=defaultExp(exp.experienceName||'',exp.context||'');added.section=exp.section||'';added.startMonth=exp.startMonth||'';added.startYear=exp.startYear||'';added.endMonth=exp.endMonth||'';added.endYear=exp.endYear||'';added.current=!!exp.current;data.experiences.push(added);if(!activeBulletId)activeBulletId=added.id;save();renderExperiences();renderBulletExperiences();renderSectionOrder();renderPreview();
-  document.querySelector('.exp-card:last-of-type')?.scrollIntoView({behavior:'smooth',block:'center'});
+  if(!exp)return;
+  const exists=data.experiences.some(e=>(exp.id&&String(e.sharedExperienceId||'')===String(exp.id))||(normalize(e.title)===normalize(exp.experienceName)&&normalize(e.org)===normalize(exp.context||'')));
+  if(exists)return;
+  const added=defaultExp(exp.experienceName||'',exp.context||'');
+  added.sharedExperienceId=exp.id||'';added.section=exp.section||'';added.dateMode=exp.dateMode||'month';added.startMonth=exp.startMonth||'';added.startTerm=exp.startTerm||'';added.startYear=exp.startYear||'';added.endMonth=exp.endMonth||'';added.endTerm=exp.endTerm||'';added.endYear=exp.endYear||'';added.current=!!exp.current;added.district=exp.district||'';added.gradeSubject=exp.gradeSubject||'';
+  data.experiences.push(added);if(!activeBulletId)activeBulletId=added.id;save();renderExperiences();renderBulletExperiences();renderSectionOrder();renderPreview();
+  document.querySelector(`[data-id="${CSS.escape(String(added.id))}"]`)?.scrollIntoView({behavior:'smooth',block:'center'});
 }
 function matchingBullets(e){
   return bulletBank.filter(b=>normalize(b.experienceName)===normalize(e.title)).filter(b=>!(e.bullets||[]).some(x=>normalize(x)===normalize(b.bullet))).slice(0,5);
@@ -497,7 +565,7 @@ function renderExperiences(){
         </div>
         <div class="form-grid">
           <div class="field"><label>Location</label><div class="form-grid"><input type="text" aria-label="City" data-field="expCity" value="${attr(e.expCity)}" placeholder="Iowa City"><input type="text" aria-label="State abbreviation" data-field="expState" value="${attr(e.expState)}" placeholder="IA" maxlength="2"></div></div>
-          <div class="field"><label>Dates</label><div class="date-grid"><div><span class="hint">Start</span><div class="date-pair"><select aria-label="Start month" data-field="startMonth">${monthOptions(e.startMonth)}</select><select aria-label="Start year" data-field="startYear">${yearOptions(e.startYear)}</select></div></div><div><span class="hint">End</span><div class="date-pair"><select aria-label="End month" data-field="endMonth" ${e.current?'disabled':''}>${monthOptions(e.endMonth)}</select><select aria-label="End year" data-field="endYear" ${e.current?'disabled':''}>${yearOptions(e.endYear)}</select></div><label class="check-label"><input type="checkbox" data-field="current" ${e.current?'checked':''}> I currently do this</label></div></div></div>
+          <div class="field"><label>Dates</label><select class="date-mode" aria-label="Date format" data-field="dateMode"><option value="month"${e.dateMode!=='semester'?' selected':''}>Month + year</option><option value="semester"${e.dateMode==='semester'?' selected':''}>Semester (Fall 2026)</option></select><div class="date-grid"><div><span class="hint">Start</span><div class="date-pair">${e.dateMode==='semester'?`<select aria-label="Start semester" data-field="startTerm">${termOptions(e.startTerm)}</select>`:`<select aria-label="Start month" data-field="startMonth">${monthOptions(e.startMonth)}</select>`}<select aria-label="Start year" data-field="startYear">${yearOptions(e.startYear)}</select></div></div><div><span class="hint">End</span><div class="date-pair">${e.dateMode==='semester'?`<select aria-label="End semester" data-field="endTerm" ${e.current?'disabled':''}>${termOptions(e.endTerm)}</select>`:`<select aria-label="End month" data-field="endMonth" ${e.current?'disabled':''}>${monthOptions(e.endMonth)}</select>`}<select aria-label="End year" data-field="endYear" ${e.current?'disabled':''}>${yearOptions(e.endYear)}</select></div><label class="check-label"><input type="checkbox" data-field="current" ${e.current?'checked':''}> I currently do this</label></div></div></div>
         </div>
       </div>
     </article>`;
@@ -564,14 +632,16 @@ function renderPreview(){
     html+=`<div class="p-section">${escapeHtml(section)}</div>`;
     groups[section].forEach(e=>{const bullets=(e.bullets||[]).map(cleanBullet).filter(Boolean);html+=`<div class="p-exp"><div class="p-row"><span class="p-bold">${escapeHtml([e.title||'Experience Title',e.gradeSubject].filter(Boolean).join(', '))}</span><span class="p-right">${escapeHtml(dateLabel(e))}</span></div><div class="p-small">${escapeHtml([e.org,e.district,expLoc(e)].filter(Boolean).join(', '))}</div>${bullets.length?`<ul>${bullets.map(b=>`<li>${escapeHtml(b)}</li>`).join('')}</ul>`:'<ul><li class="p-empty">Add bullets</li></ul>'}</div>`});
   });
-  if((data.prep||[]).length){const certs=data.prep.filter(x=>x.type==='Certification'),pds=data.prep.filter(x=>x.type==='Professional Development');const title='PROFESSIONAL DEVELOPMENT';html+=`<div class="p-section">${title}</div>`;data.prep.forEach(x=>{html+=`<div class="p-row"><span><span class="p-bold">${escapeHtml(x.name||'')}</span>${x.provider?`, ${escapeHtml(x.provider)}`:''}</span><span class="p-right">${escapeHtml(x.date||'')}</span></div>`})}
+  if((data.prep||[]).length){const pds=data.prep.filter(x=>x.type==='Professional Development'),certs=data.prep.filter(x=>x.type==='Certification');if(pds.length){html+=`<div class="p-section">PROFESSIONAL DEVELOPMENT</div>`;pds.forEach(x=>{const bullets=(x.bullets||[]).map(cleanBullet).filter(Boolean);html+=`<div class="p-row"><span><span class="p-bold">${escapeHtml(x.name||'')}</span>${x.provider?`, ${escapeHtml(x.provider)}`:''}</span><span class="p-right">${escapeHtml(x.date||'')}</span></div>${bullets.length?`<ul>${bullets.map(b=>`<li>${escapeHtml(b)}</li>`).join('')}</ul>`:''}`})}if(certs.length){html+=`<div class="p-section">CERTIFICATIONS</div>`;certs.forEach(x=>{html+=`<div class="p-row"><span><span class="p-bold">${escapeHtml(x.name||'')}</span>${x.provider?`, ${escapeHtml(x.provider)}`:''}</span><span class="p-right">${escapeHtml(x.date||'')}</span></div>`})}}
   if(field('programmingLanguages')||field('operatingSystems')||field('software')||field('spokenLanguages')){
     html+=`<div class="p-section">SKILLS</div>${field('programmingLanguages')?`<div><span class="p-bold">Technical / Specialty:</span> ${escapeHtml(field('programmingLanguages'))}</div>`:''}${field('operatingSystems')?`<div><span class="p-bold">Equipment / Tools:</span> ${escapeHtml(field('operatingSystems'))}</div>`:''}${field('software')?`<div><span class="p-bold">Software / Digital Tools:</span> ${escapeHtml(field('software'))}</div>`:''}${field('spokenLanguages')?`<div><span class="p-bold">Languages:</span> ${escapeHtml(field('spokenLanguages'))}</div>`:''}`;
   }
   $('preview').innerHTML=html;
 }
 
-$('addExperience').addEventListener('click',()=>{const added=defaultExp();data.experiences.push(added);if(!activeBulletId)activeBulletId=added.id;save();renderExperiences();renderBulletExperiences();renderSectionOrder();renderPreview();document.querySelector('.exp-card:last-of-type')?.scrollIntoView({behavior:'smooth',block:'center'})});
+$('addExperience').addEventListener('click',()=>{renderExperienceAddChoices();$('experienceAddPanel').hidden=false;$('experienceChoice').focus()});
+$('cancelAddExperience').addEventListener('click',()=>{$('experienceAddPanel').hidden=true});
+$('confirmAddExperience').addEventListener('click',()=>{const value=$('experienceChoice').value;if(value==='__new__'){const added=defaultExp();data.experiences.push(added);if(!activeBulletId)activeBulletId=added.id;save();renderExperiences();renderBulletExperiences();renderSectionOrder();renderPreview();$('experienceAddPanel').hidden=true;document.querySelector(`[data-id="${CSS.escape(String(added.id))}"] input[data-field="title"]`)?.focus();return;}const available=unaddedRecentExperiences();const exp=available.find(x=>String(x.id||`${x.experienceName}|${x.context}`)===String(value));addRecentExperience(exp);$('experienceAddPanel').hidden=true;});
 $('experienceEditor').addEventListener('input',e=>{
   const card=e.target.closest('.exp-card');if(!card)return;const exp=data.experiences.find(x=>String(x.id)===String(card.dataset.id));if(!exp)return;e.target.removeAttribute('aria-invalid');e.target.closest('.field')?.classList.remove('field-error');
   if(e.target.dataset.field){const k=e.target.dataset.field;if(k==='expState')e.target.value=capState(e.target.value);if(!['sectionChoice','current'].includes(k))exp[k]=e.target.value}
@@ -580,7 +650,8 @@ $('experienceEditor').addEventListener('input',e=>{
 $('experienceEditor').addEventListener('change',e=>{
   const card=e.target.closest('.exp-card');if(!card)return;const exp=data.experiences.find(x=>String(x.id)===String(card.dataset.id));if(!exp)return;e.target.removeAttribute('aria-invalid');e.target.closest('.field')?.classList.remove('field-error');
   if(e.target.dataset.field==='sectionChoice'){exp.section=e.target.value;}
-  if(e.target.dataset.field==='current'){exp.current=e.target.checked;if(exp.current){exp.endMonth='';exp.endYear=''}renderExperiences();renderBulletExperiences()}
+  if(e.target.dataset.field==='current'){exp.current=e.target.checked;if(exp.current){exp.endMonth='';exp.endTerm='';exp.endYear=''}renderExperiences();renderBulletExperiences()}
+  if(e.target.dataset.field==='dateMode'){exp.dateMode=e.target.value;exp.startMonth='';exp.startTerm='';exp.endMonth='';exp.endTerm='';renderExperiences();}
   if(e.target.dataset.field&&!['sectionChoice','current'].includes(e.target.dataset.field)){const k=e.target.dataset.field;if(k==='expState')e.target.value=capState(e.target.value);exp[k]=e.target.value}
   save();renderSectionOrder();renderPreview();
 });
@@ -626,112 +697,44 @@ $('sectionOrderList').addEventListener('click',e=>{
 });
 
 
-function defaultPrep(){return {id:uid(),type:'Certification',name:'',provider:'',date:''}}
+function defaultPrep(type='Professional Development',name='',provider=''){return {id:uid(),type,name,provider,date:'',bullets:['']}}
+function prepCardHtml(x,i){
+  const isPD=x.type==='Professional Development';
+  const bullets=Array.isArray(x.bullets)&&x.bullets.length?x.bullets:[''];
+  return `<article class="exp-card" data-prep-id="${attr(x.id)}"><div class="exp-head"><div><strong>${escapeHtml(x.name||`${x.type} ${i+1}`)}</strong><span class="sub">${escapeHtml(x.type)}</span></div><button class="btn small danger" type="button" data-remove-prep="${attr(x.id)}">Remove</button></div><div class="exp-body"><div class="form-grid"><div class="field"><label>Title</label><input data-prep-field="name" value="${attr(x.name)}" placeholder="${isPD?'Structured Literacy Workshop':'CPR / First Aid'}"></div><div class="field"><label>Organization / provider</label><input data-prep-field="provider" value="${attr(x.provider)}" placeholder="School district, Baker Teacher Leader Center, American Red Cross"></div><div class="field"><label>Date</label><input data-prep-field="date" value="${attr(x.date)}" placeholder="Fall 2026 or October 2026"></div></div>${isPD?`<div class="prep-bullets"><strong>Bullets <span class="hint">(optional — only add if they strengthen your qualifications)</span></strong>${bullets.map((b,bi)=>`<div class="bullet-row"><textarea data-prep-bullet="${bi}" placeholder="Optional: briefly show what you learned, created, or practiced">${escapeHtml(b)}</textarea>${bullets.length>1?`<button class="btn small" type="button" data-remove-prep-bullet="${bi}">Remove</button>`:''}</div>`).join('')}<button class="btn small soft" type="button" data-add-prep-bullet>Add bullet</button></div>`:''}</div></article>`;
+}
+function renderPrepChoices(){
+  refreshRecentExperiences();
+  const used=new Set((data.prep||[]).map(x=>normalize(x.name)));
+  const options=recentExperiences.filter(x=>looksLikeProfessionalPrep(x)&&!used.has(normalize(x.experienceName)));
+  $('pdChoice').innerHTML=options.length?options.map(x=>`<option value="${attr(x.id||x.experienceName)}">${escapeHtml(x.experienceName)}${x.context?` — ${escapeHtml(x.context)}`:''}</option>`).join(''):'<option value="">No unused professional-growth items found</option>';
+  $('addPdChoice').disabled=!options.length;
+}
 function renderPrep(){
-  const root=$('prepEditor');if(!root)return;data.prep=Array.isArray(data.prep)?data.prep:[];
-  if(!data.prep.length){root.innerHTML='<p class="recent-note">Nothing added yet. You can skip this step.</p>';renderPreview();return}
-  root.innerHTML=data.prep.map((x,i)=>`<article class="exp-card" data-prep-id="${attr(x.id)}"><div class="exp-head"><div><strong>${escapeHtml(x.name||`Professional preparation ${i+1}`)}</strong><span class="sub">${escapeHtml(x.type)}</span></div><button class="btn small danger" type="button" data-remove-prep="${attr(x.id)}">Remove</button></div><div class="exp-body"><div class="form-grid"><div class="field"><label>Type</label><select data-prep-field="type"><option${x.type==='Certification'?' selected':''}>Certification</option><option${x.type==='Professional Development'?' selected':''}>Professional Development</option></select></div><div class="field"><label>Name</label><input data-prep-field="name" value="${attr(x.name)}" placeholder="CPR / First Aid, Baker Teacher Leader Center workshop, or Literacy Workshop"></div><div class="field"><label>Provider / organization <span class="hint">(optional)</span></label><input data-prep-field="provider" value="${attr(x.provider)}" placeholder="Baker Teacher Leader Center, American Red Cross, or school district"></div><div class="field"><label>Date <span class="hint">(optional)</span></label><input data-prep-field="date" value="${attr(x.date)}" placeholder="August 20XX"></div></div></div></article>`).join('');
+  data.prep=Array.isArray(data.prep)?data.prep:[];
+  const pds=data.prep.filter(x=>x.type==='Professional Development'),certs=data.prep.filter(x=>x.type==='Certification');
+  $('pdEditor').innerHTML=pds.length?pds.map((x,i)=>prepCardHtml(x,i)).join(''):'<p class="recent-note">No professional development added yet.</p>';
+  $('certEditor').innerHTML=certs.length?certs.map((x,i)=>prepCardHtml(x,i)).join(''):'<p class="recent-note">No certifications added yet.</p>';
+  renderPrepChoices();renderPreview();
 }
-$('addPrep').addEventListener('click',()=>{data.prep=Array.isArray(data.prep)?data.prep:[];data.prep.push(defaultPrep());save();renderPrep();document.querySelector('[data-prep-id]:last-of-type')?.scrollIntoView({behavior:'smooth',block:'center'})});
-$('prepEditor').addEventListener('input',e=>{const card=e.target.closest('[data-prep-id]');if(!card||!e.target.dataset.prepField)return;const x=data.prep.find(p=>String(p.id)===String(card.dataset.prepId));if(!x)return;x[e.target.dataset.prepField]=e.target.value;save();renderPreview()});
-$('prepEditor').addEventListener('change',e=>{const card=e.target.closest('[data-prep-id]');if(!card||!e.target.dataset.prepField)return;const x=data.prep.find(p=>String(p.id)===String(card.dataset.prepId));if(!x)return;x[e.target.dataset.prepField]=e.target.value;save();renderPrep();renderPreview()});
-$('prepEditor').addEventListener('click',e=>{const b=e.target.closest('[data-remove-prep]');if(!b)return;data.prep=data.prep.filter(x=>String(x.id)!==String(b.dataset.removePrep));save();renderPrep();renderPreview()});
-
-function bindFields(){
-  const ids=['name','email','phone','linkedin','city','state','school','schoolLocation','degree','otherDegree','major','gradMonth','gradYear','minor','certificates','deansList','gpa','licensureReady','licenseName','endorsements','licenseDate','programmingLanguages','operatingSystems','software','spokenLanguages'];
-  ids.forEach(id=>$(id).addEventListener('input',()=>{if(id==='state')$('state').value=capState($('state').value);$(id).removeAttribute('aria-invalid');$(id).closest('.field')?.classList.remove('field-error');save();renderPreview()}));
-  $('degree').addEventListener('change',()=>{$('otherDegreeWrap').hidden=$('degree').value!=='Other';save();renderPreview()});
-  $('licensureReady').addEventListener('change',()=>{$('licensureFields').hidden=$('licensureReady').value!=='yes';save();renderPreview()});
-}
-function validate(){
-  clearValidationMarks();
-  const errors={1:[],2:[],3:[],4:[],5:[],6:[]};
-  let firstStep=null,firstControl=null;
-  const required=[['name','name'],['email','email'],['phone','phone'],['city','city'],['state','state'],['school','school'],['degree','degree'],['major','major'],['gradMonth','graduation month'],['gradYear','graduation year']];
-  required.forEach(([id,label])=>{if(!field(id)){errors[1].push(label);markControlInvalid($(id));firstStep??=1;firstControl??=$(id)}});
-  if(field('degree')==='Other'&&!field('otherDegree')){errors[1].push('degree name');markControlInvalid($('otherDegree'));firstStep??=1;firstControl??=$('otherDegree')}
-  if(field('state')&&!/^[A-Za-z]{2}$/.test(field('state'))){errors[1].push('a 2-letter state abbreviation');markControlInvalid($('state'));firstStep??=1;firstControl??=$('state')}
-  if(field('email')&&!$('email').checkValidity()){errors[1].push('a valid email');markControlInvalid($('email'));firstStep??=1;firstControl??=$('email')}
-
-  const filled=data.experiences.filter(e=>e.title||e.org||e.section||e.expCity||e.expState||e.startMonth||e.startYear||e.endMonth||e.endYear||(e.bullets||[]).some(b=>String(b||'').trim()));
-  if(!filled.length){errors[2].push('at least one experience');$('experienceErrorNote')?.classList.add('show');firstStep??=2}
-  for(const e of filled){
-    const card=document.querySelector(`[data-id="${CSS.escape(String(e.id))}"]`);let cardBad=false;
-    const check=(fieldName,ok)=>{if(ok)return;cardBad=true;const control=card?.querySelector(`[data-field="${fieldName}"]`);markControlInvalid(control);firstControl??=control};
-    check('title',!!e.title);check('org',!!e.org);check('sectionChoice',!!e.section);check('expCity',!!e.expCity);check('expState',/^[A-Za-z]{2}$/.test(e.expState||''));check('startMonth',!!e.startMonth);check('startYear',!!e.startYear);if(!e.current){check('endMonth',!!e.endMonth);check('endYear',!!e.endYear)}
-    if(cardBad){card?.classList.add('error-card');errors[2].push(`complete the highlighted details for ${e.title||'an experience'}`);firstStep??=2}
-  }
-
-  const badSteps=Object.keys(errors).filter(k=>errors[k].length).map(Number);
-  badSteps.forEach(markStepError);
-  if(badSteps.length){
-    const labels={1:'Basics',2:'Experience Details',3:'Bullets',4:'Professional Prep',5:'Skills',6:'Finish'};
-    const summary=badSteps.map(step=>`${labels[step]}: ${errors[step].join(', ')}`).join(' • ');
-    $('validationSummary').textContent=`Finish the highlighted information before creating your Word resume. ${summary}`;
-    $('validationSummary').classList.add('show');
-    $('downloadStatus').textContent='Some required information is still missing. The first incomplete step is highlighted.';
-    showStep(firstStep||badSteps[0]);
-    setTimeout(()=>{firstControl?.focus?.();(firstControl||document.querySelector(`[data-step="${firstStep||badSteps[0]}"]`))?.scrollIntoView?.({behavior:'smooth',block:'center'})},50);
-    return false;
-  }
-  return true;
-}
-function makeWordDocument(){
-  if(!window.docx)throw new Error('docx library unavailable');
-  const {Document,Paragraph,TextRun,Tab,AlignmentType,TabStopType,PageOrientation}=window.docx;
-  const FONT='Aptos',BODY=22,SMALL=22,NAME=22,RIGHT=10368;
-  const run=(t,o={})=>new TextRun({text:String(t||''),font:FONT,size:o.size||BODY,bold:!!o.bold,italics:!!o.italics});
-  const rightLine=(l,r,o={})=>new Paragraph({children:[run(l,{bold:!!o.leftBold}),new TextRun({children:[new Tab(),String(r||'')],font:FONT,size:BODY,bold:!!o.rightBold})],tabStops:[{type:TabStopType.RIGHT,position:RIGHT}],spacing:{before:o.before||0,after:o.after||0},keepNext:true,widowControl:true});
-  const heading=t=>new Paragraph({children:[run(String(t).toUpperCase(),{bold:true})],spacing:{before:0,after:0},keepNext:true,widowControl:true});
-  const blankLine=()=>new Paragraph({children:[run('')],spacing:{before:0,after:0},widowControl:true});
-  const bullet=t=>new Paragraph({children:[run(cleanBullet(t))],bullet:{level:0},indent:{left:360,hanging:180},spacing:{after:0},widowControl:true});
-  const line=(runs=[],after=0,keep=false)=>new Paragraph({children:runs,spacing:{after},keepNext:keep,widowControl:true});
-  const children=[];
-  children.push(new Paragraph({children:[run(field('name').toUpperCase(),{bold:true,size:NAME})],alignment:AlignmentType.CENTER,spacing:{after:0},keepNext:true}));
-  const cityState=cityStateLine(),linkedin=field('linkedin');
-  const contact=[field('email'),field('phone'),cityState].filter(Boolean).join(' | ');
-  if(contact)children.push(new Paragraph({children:[run(contact,{size:SMALL})],alignment:AlignmentType.CENTER,spacing:{after:0},keepNext:true}));
-  if(linkedin)children.push(new Paragraph({children:[run(linkedin,{size:SMALL})],alignment:AlignmentType.CENTER,spacing:{after:0},keepNext:true}));
-  children.push(blankLine());
-  children.push(heading('Education'));
-  children.push(rightLine([field('school'),field('schoolLocation')].filter(Boolean).join(', '),`Anticipated ${gradLine()}`,{leftBold:true}));
-  children.push(line([run(degreeLine())],0,!!(field('minor')||field('endorsements')||field('certificates')||field('deansList')||gpaLine())));
-  if(field('minor'))children.push(bullet(`Minor: ${field('minor')}`));
-  if(field('endorsements'))children.push(bullet(`Endorsement${field('endorsements').includes(';')?'s':''}: ${field('endorsements').replace(/;/g,', ')}`));
-  if(field('certificates'))children.push(bullet(`Certificate${field('certificates').includes(';')?'s':''}: ${field('certificates').replace(/;/g,', ')}`));
-  if(field('deansList'))children.push(bullet(`Dean's List: ${field('deansList')}`));
-  if(gpaLine())children.push(bullet(`GPA: ${gpaLine()}`));
-  if(field('licensureReady')==='yes'&&(field('licenseName')||field('licenseDate'))){children.push(blankLine());children.push(heading('Licensure'));if(field('licenseName'))children.push(rightLine(field('licenseName'),field('licenseDate'),{leftBold:true}));}
-  const groups=getGroups();orderedSections(groups).forEach(section=>{
-    children.push(blankLine());
-    children.push(heading(section));
-    groups[section].forEach((e)=>{const bullets=(e.bullets||[]).map(cleanBullet).filter(Boolean);children.push(rightLine([e.title,e.gradeSubject].filter(Boolean).join(', '),dateLabel(e),{leftBold:true}));children.push(line([run([e.org,e.district,expLoc(e)].filter(Boolean).join(', '))],0,true));(bullets.length?bullets:['Add bullets']).forEach(b=>children.push(bullet(b)))});
-  });
-  if((data.prep||[]).length){const certs=data.prep.filter(x=>x.type==='Certification'),pds=data.prep.filter(x=>x.type==='Professional Development');const prepTitle='Professional Development';children.push(blankLine());children.push(heading(prepTitle));data.prep.forEach(x=>{children.push(rightLine([x.name,x.provider].filter(Boolean).join(', '),x.date,{leftBold:true}))})}
-  if(field('programmingLanguages')||field('operatingSystems')||field('software')||field('spokenLanguages')){children.push(blankLine());children.push(heading('Skills'));if(field('programmingLanguages'))children.push(line([run('Technical / Specialty: ',{bold:true}),run(field('programmingLanguages'))]));if(field('operatingSystems'))children.push(line([run('Equipment / Tools: ',{bold:true}),run(field('operatingSystems'))]));if(field('software'))children.push(line([run('Software / Digital Tools: ',{bold:true}),run(field('software'))]));if(field('spokenLanguages'))children.push(line([run('Languages: ',{bold:true}),run(field('spokenLanguages'))]));}
-  return new Document({sections:[{properties:{page:{size:{width:12240,height:15840,orientation:PageOrientation.PORTRAIT},margin:{top:936,right:936,bottom:936,left:936,header:360,footer:360,gutter:0}}},children}]});
-}
-function filename(){const n=field('name').replace(/[^A-Za-z0-9\s_-]/g,'').replace(/\s+/g,'_').replace(/_+/g,'_');return `${n||'Teaching'}_Teaching_Resume.docx`}
-document.querySelector('.wizard-progress').addEventListener('click',e=>{const btn=e.target.closest('[data-go-step]');if(btn)showStep(btn.dataset.goStep,{focus:true})});
-$('prevStep').addEventListener('click',()=>showStep(currentStep-1,{focus:true}));
-$('nextStep').addEventListener('click',()=>showStep(currentStep+1,{focus:true}));
-
-$('downloadResume').addEventListener('click',async()=>{
-  save();if(!validate())return;const btn=$('downloadResume');btn.disabled=true;$('downloadStatus').textContent='Creating your Word resume…';$('saveOptions').hidden=true;
-  try{const blob=await window.docx.Packer.toBlob(makeWordDocument());if(lastDownloadUrl)URL.revokeObjectURL(lastDownloadUrl);lastDownloadUrl=URL.createObjectURL(blob);const fn=filename();lastDownloadFile=new File([blob],fn,{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});$('downloadAgain').href=lastDownloadUrl;$('downloadAgain').download=fn;$('saveOptions').hidden=false;const share=$('shareResume');const canShare=!!(navigator.share&&navigator.canShare&&navigator.canShare({files:[lastDownloadFile]}));share.hidden=!canShare;const mobile=matchMedia('(max-width:700px)').matches||/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);if(!mobile){const a=document.createElement('a');a.href=lastDownloadUrl;a.download=fn;document.body.appendChild(a);a.click();a.remove();$('downloadStatus').textContent=`Your editable Word resume is ready: ${fn}`}else{$('downloadStatus').textContent='Your Word resume is ready. Choose Share / Save or Download .docx below.'}}
-  catch(err){console.error(err);$('downloadStatus').textContent='The Word file could not be created. Refresh the page and try again.'}finally{btn.disabled=false}
+$('addPd').addEventListener('click',()=>{data.prep.push(defaultPrep('Professional Development'));save();renderPrep();document.querySelector('#pdEditor [data-prep-id]:last-of-type')?.scrollIntoView({behavior:'smooth',block:'center'})});
+$('addCert').addEventListener('click',()=>{data.prep.push(defaultPrep('Certification'));save();renderPrep();document.querySelector('#certEditor [data-prep-id]:last-of-type')?.scrollIntoView({behavior:'smooth',block:'center'})});
+$('addPdChoice').addEventListener('click',()=>{const value=$('pdChoice').value;if(!value)return;refreshRecentExperiences();const exp=recentExperiences.find(x=>String(x.id||x.experienceName)===String(value));if(!exp)return;data.prep.push(defaultPrep('Professional Development',exp.experienceName,exp.context||''));save();renderPrep()});
+['pdEditor','certEditor'].forEach(id=>{
+  $(id).addEventListener('input',e=>{const card=e.target.closest('[data-prep-id]');if(!card)return;const x=data.prep.find(p=>String(p.id)===String(card.dataset.prepId));if(!x)return;if(e.target.dataset.prepField)x[e.target.dataset.prepField]=e.target.value;if(e.target.dataset.prepBullet!==undefined){x.bullets=x.bullets||[''];x.bullets[Number(e.target.dataset.prepBullet)]=cleanBullet(e.target.value)}save();renderPreview()});
+  $(id).addEventListener('click',e=>{const card=e.target.closest('[data-prep-id]');if(!card)return;const x=data.prep.find(p=>String(p.id)===String(card.dataset.prepId));if(!x)return;const remove=e.target.closest('[data-remove-prep]');if(remove){data.prep=data.prep.filter(p=>String(p.id)!==String(remove.dataset.removePrep));save();renderPrep();return}if(e.target.closest('[data-add-prep-bullet]')){x.bullets=x.bullets||[''];x.bullets.push('');save();renderPrep();return}const rb=e.target.closest('[data-remove-prep-bullet]');if(rb){x.bullets.splice(Number(rb.dataset.removePrepBullet),1);if(!x.bullets.length)x.bullets=[''];save();renderPrep();}});
 });
 $('shareResume').addEventListener('click',async()=>{if(!lastDownloadFile)return;try{await navigator.share({files:[lastDownloadFile],title:'Resume'});$('downloadStatus').textContent='Resume shared or saved.'}catch(err){if(err?.name!=='AbortError')$('downloadStatus').textContent='Share was not available. Use Download .docx instead.'}});
 
 window.addEventListener('focus',()=>{
-  const latestExperiences=safeArray(EXPERIENCE_BANK_KEY).filter(x=>x&&(x.experienceName||x.title)).map(x=>({experienceName:x.experienceName||x.title,context:x.context||x.org||'',section:normalizeSection(x.section||''),startMonth:x.startMonth||'',startYear:x.startYear||'',endMonth:x.endMonth||'',endYear:x.endYear||'',current:!!x.current})).slice().reverse();
+  const latestExperiences=safeArray(EXPERIENCE_BANK_KEY).filter(x=>x&&(x.experienceName||x.title)).map(x=>({id:x.id||'',experienceName:x.experienceName||x.title,context:x.context||x.org||'',section:normalizeSection(x.section||''),dateMode:x.dateMode||'month',startMonth:x.startMonth||'',startTerm:x.startTerm||'',startYear:x.startYear||'',endMonth:x.endMonth||'',endTerm:x.endTerm||'',endYear:x.endYear||'',current:!!x.current,district:x.district||'',gradeSubject:x.gradeSubject||'',sourceCategory:x.sourceCategory||''})).slice().reverse();
   const latestBullets=safeArray(BULLET_BANK_KEY).filter(x=>x&&x.experienceName&&x.bullet);
   const changed=JSON.stringify(latestExperiences)!==JSON.stringify(recentExperiences)||JSON.stringify(latestBullets)!==JSON.stringify(bulletBank);
   recentExperiences=latestExperiences;bulletBank=latestBullets;
-  if(changed){renderRecentExperiences();renderExperiences();renderBulletExperiences();renderPreview();}
+  if(changed){renderExperiences();renderBulletExperiences();renderPrep();renderPreview();}
 });
 
-fillGrad();load();restore();activeBulletId=data.experiences.find(e=>e.title||e.org)?.id||data.experiences[0]?.id||null;renderRecentExperiences();renderExperiences();renderBulletExperiences();renderSectionOrder();renderPrep();bindFields();renderPreview();save();showStep(1);
+fillGrad();load();restore();activeBulletId=data.experiences.find(e=>e.title||e.org)?.id||data.experiences[0]?.id||null;renderExperiences();renderBulletExperiences();renderSectionOrder();renderPrep();bindFields();renderPreview();save();showStep(1);
 })();
 </script>
 </body>
