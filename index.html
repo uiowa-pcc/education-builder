@@ -770,6 +770,111 @@ $('addPdChoice').addEventListener('click',()=>{const value=$('pdChoice').value;i
   $(id).addEventListener('change',updatePrepField);
   $(id).addEventListener('click',e=>{const toggle=e.target.closest('[data-toggle-prep]');if(toggle){activePrepId=toggle.dataset.togglePrep;renderPrep();return}const card=e.target.closest('[data-prep-id]');if(!card)return;const x=data.prep.find(p=>String(p.id)===String(card.dataset.prepId));if(!x)return;const remove=e.target.closest('[data-remove-prep]');if(remove){const removed=remove.dataset.removePrep;data.prep=data.prep.filter(p=>String(p.id)!==String(removed));if(String(activePrepId)===String(removed))activePrepId=null;save();renderPrep();return}if(e.target.closest('[data-add-prep-bullet]')){x.bullets=x.bullets||[''];x.bullets.push('');save();renderPrep();return}const rb=e.target.closest('[data-remove-prep-bullet]');if(rb){x.bullets.splice(Number(rb.dataset.removePrepBullet),1);if(!x.bullets.length)x.bullets=[''];save();renderPrep();}});
 });
+
+function validate(){
+  clearValidationMarks();
+  const errors={1:[],2:[],3:[],4:[],5:[],6:[]};
+  let firstStep=null,firstControl=null,firstBadExperienceId=null;
+  const required=[['name','name'],['email','email'],['phone','phone'],['city','city'],['state','state'],['school','school'],['degree','degree'],['major','major'],['gradMonth','graduation month'],['gradYear','graduation year']];
+  required.forEach(([id,label])=>{if(!field(id)){errors[1].push(label);markControlInvalid($(id));firstStep??=1;firstControl??=$(id)}});
+  if(field('degree')==='Other'&&!field('otherDegree')){errors[1].push('degree name');markControlInvalid($('otherDegree'));firstStep??=1;firstControl??=$('otherDegree')}
+  if(field('state')&&!/^[A-Za-z]{2}$/.test(field('state'))){errors[1].push('a 2-letter state abbreviation');markControlInvalid($('state'));firstStep??=1;firstControl??=$('state')}
+  if(field('email')&&!$('email').checkValidity()){errors[1].push('a valid email');markControlInvalid($('email'));firstStep??=1;firstControl??=$('email')}
+
+  const filled=data.experiences.filter(e=>e.title||e.org||e.section||e.expCity||e.expState||e.startMonth||e.startTerm||e.startYear||e.endMonth||e.endTerm||e.endYear||(e.bullets||[]).some(b=>String(b||'').trim()));
+  if(!filled.length){errors[2].push('at least one experience');$('experienceErrorNote')?.classList.add('show');firstStep??=2}
+  for(const e of filled){
+    const card=document.querySelector(`[data-id="${CSS.escape(String(e.id))}"]`);let cardBad=false;
+    const check=(fieldName,ok)=>{if(ok)return;cardBad=true;const control=card?.querySelector(`[data-field="${fieldName}"]`);markControlInvalid(control);firstControl??=control};
+    check('title',!!e.title);check('org',!!e.org);check('sectionChoice',!!e.section);check('expCity',!!e.expCity);check('expState',/^[A-Za-z]{2}$/.test(e.expState||''));
+    check('startYear',!!e.startYear);
+    if(e.dateMode==='semester')check('startTerm',!!e.startTerm);else check('startMonth',!!e.startMonth);
+    if(!e.current){check('endYear',!!e.endYear);if(e.dateMode==='semester')check('endTerm',!!e.endTerm);else check('endMonth',!!e.endMonth)}
+    if(cardBad){card?.classList.add('error-card');errors[2].push(`complete the highlighted details for ${e.title||'an experience'}`);firstBadExperienceId??=e.id;firstStep??=2}
+  }
+
+  const badSteps=Object.keys(errors).filter(k=>errors[k].length).map(Number);
+  badSteps.forEach(markStepError);
+  if(badSteps.length){
+    const labels={1:'Basics',2:'Experience Details',3:'Bullets',4:'Professional Prep',5:'Skills',6:'Finish'};
+    const summary=badSteps.map(step=>`${labels[step]}: ${errors[step].join(', ')}`).join(' • ');
+    $('validationSummary').textContent=`Finish the highlighted information before creating your Word resume. ${summary}`;
+    $('validationSummary').classList.add('show');
+    $('downloadStatus').textContent='Some required information is still missing. The first incomplete step is highlighted.';
+    if((firstStep||badSteps[0])===2&&firstBadExperienceId){activeExperienceId=firstBadExperienceId;renderExperiences();}
+    showStep(firstStep||badSteps[0]);
+    setTimeout(()=>{const target=firstControl||document.querySelector(`[data-step="${firstStep||badSteps[0]}"]`);target?.focus?.();target?.scrollIntoView?.({behavior:'smooth',block:'center'})},50);
+    return false;
+  }
+  return true;
+}
+function makeWordDocument(){
+  if(!window.docx)throw new Error('docx library unavailable');
+  const {Document,Paragraph,TextRun,Tab,AlignmentType,TabStopType,PageOrientation}=window.docx;
+  const FONT='Aptos',BODY=22,SMALL=22,NAME=22,RIGHT=10368;
+  const run=(t,o={})=>new TextRun({text:String(t||''),font:FONT,size:o.size||BODY,bold:!!o.bold,italics:!!o.italics});
+  const rightLine=(l,r,o={})=>new Paragraph({children:[run(l,{bold:!!o.leftBold}),new TextRun({children:[new Tab(),String(r||'')],font:FONT,size:BODY,bold:!!o.rightBold})],tabStops:[{type:TabStopType.RIGHT,position:RIGHT}],spacing:{before:o.before||0,after:o.after||0},keepNext:true,widowControl:true});
+  const heading=t=>new Paragraph({children:[run(String(t).toUpperCase(),{bold:true})],spacing:{before:0,after:0},keepNext:true,widowControl:true});
+  const blankLine=()=>new Paragraph({children:[run('')],spacing:{before:0,after:0},widowControl:true});
+  const bullet=t=>new Paragraph({children:[run(cleanBullet(t))],bullet:{level:0},indent:{left:360,hanging:180},spacing:{after:0},widowControl:true});
+  const line=(runs=[],after=0,keep=false)=>new Paragraph({children:runs,spacing:{after},keepNext:keep,widowControl:true});
+  const children=[];
+  children.push(new Paragraph({children:[run(field('name').toUpperCase(),{bold:true,size:NAME})],alignment:AlignmentType.CENTER,spacing:{after:0},keepNext:true}));
+  const cityState=cityStateLine(),linkedin=field('linkedin');
+  const contact=[field('email'),field('phone'),cityState].filter(Boolean).join(' | ');
+  if(contact)children.push(new Paragraph({children:[run(contact,{size:SMALL})],alignment:AlignmentType.CENTER,spacing:{after:0},keepNext:true}));
+  if(linkedin)children.push(new Paragraph({children:[run(linkedin,{size:SMALL})],alignment:AlignmentType.CENTER,spacing:{after:0},keepNext:true}));
+  children.push(blankLine());
+  children.push(heading('Education'));
+  children.push(rightLine([field('school'),field('schoolLocation')].filter(Boolean).join(', '),`Anticipated ${gradLine()}`,{leftBold:true}));
+  children.push(line([run(degreeLine())],0,!!(field('minor')||field('endorsements')||field('certificates')||field('deansList')||gpaLine())));
+  if(field('minor'))children.push(bullet(`Minor: ${field('minor')}`));
+  if(field('endorsements'))children.push(bullet(`Endorsement${field('endorsements').includes(';')?'s':''}: ${field('endorsements').replace(/;/g,', ')}`));
+  if(field('certificates'))children.push(bullet(`Certificate${field('certificates').includes(';')?'s':''}: ${field('certificates').replace(/;/g,', ')}`));
+  if(field('deansList'))children.push(bullet(`Dean's List: ${field('deansList')}`));
+  if(gpaLine())children.push(bullet(`GPA: ${gpaLine()}`));
+  if(field('licensureReady')==='yes'&&(field('licenseName')||field('licenseDate'))){children.push(blankLine());children.push(heading('Licensure'));if(field('licenseName'))children.push(rightLine(field('licenseName'),field('licenseDate'),{leftBold:true}));}
+  const groups=getGroups();orderedSections(groups).forEach(section=>{
+    children.push(blankLine());
+    children.push(heading(section));
+    groups[section].forEach((e)=>{const bullets=(e.bullets||[]).map(cleanBullet).filter(Boolean);children.push(rightLine([e.title,e.gradeSubject].filter(Boolean).join(', '),dateLabel(e),{leftBold:true}));children.push(line([run([e.org,e.district,expLoc(e)].filter(Boolean).join(', '))],0,true));bullets.forEach(b=>children.push(bullet(b))) });
+  });
+  const pds=(data.prep||[]).filter(x=>x.type==='Professional Development');
+  const certs=(data.prep||[]).filter(x=>x.type==='Certification');
+  if(pds.length){children.push(blankLine());children.push(heading('Professional Development'));pds.forEach(x=>{children.push(rightLine([x.name,x.provider].filter(Boolean).join(', '),prepDateLabel(x),{leftBold:true}));(x.bullets||[]).map(cleanBullet).filter(Boolean).forEach(b=>children.push(bullet(b)))})}
+  if(certs.length){children.push(blankLine());children.push(heading('Certifications'));certs.forEach(x=>children.push(rightLine([x.name,x.provider].filter(Boolean).join(', '),prepDateLabel(x),{leftBold:true})))}
+  if(field('programmingLanguages')||field('operatingSystems')||field('software')||field('spokenLanguages')){children.push(blankLine());children.push(heading('Skills'));if(field('programmingLanguages'))children.push(line([run('Technical / Specialty: ',{bold:true}),run(field('programmingLanguages'))]));if(field('operatingSystems'))children.push(line([run('Equipment / Tools: ',{bold:true}),run(field('operatingSystems'))]));if(field('software'))children.push(line([run('Software / Digital Tools: ',{bold:true}),run(field('software'))]));if(field('spokenLanguages'))children.push(line([run('Languages: ',{bold:true}),run(field('spokenLanguages'))]));}
+  return new Document({sections:[{properties:{page:{size:{width:12240,height:15840,orientation:PageOrientation.PORTRAIT},margin:{top:936,right:936,bottom:936,left:936,header:360,footer:360,gutter:0}}},children}]});
+}
+function filename(){const n=field('name').replace(/[^A-Za-z0-9\s_-]/g,'').replace(/\s+/g,'_').replace(/_+/g,'_');return `${n||'Teaching'}_Teaching_Resume.docx`}
+
+$('downloadResume').addEventListener('click',async()=>{
+  save();
+  if(!validate())return;
+  const btn=$('downloadResume');
+  btn.disabled=true;
+  $('downloadStatus').textContent='Creating your Word resume…';
+  $('saveOptions').hidden=true;
+  try{
+    if(!window.docx?.Packer)throw new Error('Word export library did not load');
+    const blob=await window.docx.Packer.toBlob(makeWordDocument());
+    if(lastDownloadUrl)URL.revokeObjectURL(lastDownloadUrl);
+    lastDownloadUrl=URL.createObjectURL(blob);
+    const fn=filename();
+    try{lastDownloadFile=new File([blob],fn,{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})}catch(_){lastDownloadFile=null}
+    $('downloadAgain').href=lastDownloadUrl;
+    $('downloadAgain').download=fn;
+    $('saveOptions').hidden=false;
+    const share=$('shareResume');
+    const canShare=!!(lastDownloadFile&&navigator.share&&navigator.canShare&&navigator.canShare({files:[lastDownloadFile]}));
+    share.hidden=!canShare;
+    const mobile=matchMedia('(max-width:700px)').matches||/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if(!mobile){const a=document.createElement('a');a.href=lastDownloadUrl;a.download=fn;document.body.appendChild(a);a.click();a.remove();$('downloadStatus').textContent=`Your editable Word resume is ready: ${fn}`}
+    else{$('downloadStatus').textContent='Your Word resume is ready. Choose Share / Save or Download .docx below.'}
+  }catch(err){console.error(err);$('downloadStatus').textContent=window.docx?'The Word file could not be created. Please try again.':'The Word export library did not load. Refresh the page and try again.'}
+  finally{btn.disabled=false}
+});
+
 $('shareResume').addEventListener('click',async()=>{if(!lastDownloadFile)return;try{await navigator.share({files:[lastDownloadFile],title:'Resume'});$('downloadStatus').textContent='Resume shared or saved.'}catch(err){if(err?.name!=='AbortError')$('downloadStatus').textContent='Share was not available. Use Download .docx instead.'}});
 
 $('prevStep').addEventListener('click',()=>showStep(currentStep-1,{focus:true}));
