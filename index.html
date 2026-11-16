@@ -493,6 +493,31 @@ function save(){
   syncSectionOrder();
   if(storageOK){syncSharedExperienceBank();safeSet(BUILDER_KEY,data);}
 }
+// Keep the fixed builder fields and mini resume synchronized while typing.
+function bindFields(){
+  const ids=['name','email','phone','linkedin','city','state','school','schoolLocation',
+    'degree','otherDegree','major','gradMonth','gradYear','minor','endorsements',
+    'certificates','deansList','gpa','licensureReady','licenseName','licenseDate',
+    'programmingLanguages','operatingSystems','software','spokenLanguages'];
+  const update=e=>{
+    const el=e.target;
+    if(!el || !ids.includes(el.id))return;
+    if(el.id==='state')el.value=capState(el.value);
+    if(el.id==='degree')$('otherDegreeWrap').hidden=el.value!=='Other';
+    if(el.id==='licensureReady')$('licensureFields').hidden=el.value!=='yes';
+    el.removeAttribute('aria-invalid');
+    el.closest('.field')?.classList.remove('field-error');
+    data.fields[el.id]=el.value;
+    save();
+    renderPreview();
+  };
+  // input handles each keystroke; change handles dropdowns and browser autofill.
+  document.querySelectorAll('[data-step="1"] input,[data-step="1"] select,[data-step="5"] input,[data-step="5"] select').forEach(el=>{
+    el.addEventListener('input',update);
+    el.addEventListener('change',update);
+  });
+}
+
 function fillGrad(){
   const now=new Date().getFullYear();
   $('gradMonth').innerHTML='<option value="">Month</option>'+months.map(m=>`<option>${m}</option>`).join('');
